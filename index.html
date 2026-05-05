@@ -1,677 +1,629 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#121214">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Signal">
-  <link rel="manifest" href="./manifest.json">
-  <link rel="apple-touch-icon" href="./icon.png">
-  <title>Signal</title>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#12121c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Signal">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<title>Signal</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --red:#D85A30;--red-light:#FAECE7;--red-mid:#F0997B;--red-dark:#993C1D;
+  --blue:#378ADD;--blue-light:#E6F1FB;--blue-mid:#85B7EB;--blue-dark:#185FA5;
+  --bg:#12121c;--bg2:#1a1a28;--bg3:#22223a;
+  --text:#e8e6f0;--muted:#8a88a0;--border:#2e2c44;
+  --r:14px;--rm:10px;--rs:7px;
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;overflow:hidden}
+.app{display:flex;flex-direction:column;height:100%;max-width:480px;margin:0 auto;padding:calc(var(--safe-top) + 12px) 16px calc(var(--safe-bottom) + 80px)}
+.scroll-area{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-bottom:8px}
+.scroll-area::-webkit-scrollbar{display:none}
 
-    :root {
-      --bg: #121214;
-      --bg2: #1c1c1f;
-      --bg3: #252528;
-      --text: #e8e6de;
-      --muted: #888780;
-      --border: rgba(255,255,255,0.1);
-      --border2: rgba(255,255,255,0.18);
-      --red: #D85A30;
-      --red-light: rgba(216,90,48,0.12);
-      --red-mid: rgba(216,90,48,0.3);
-      --blue: #378ADD;
-      --blue-light: rgba(55,138,221,0.12);
-      --blue-mid: rgba(55,138,221,0.3);
-      --r: 12px;
-      --r-sm: 8px;
-    }
+/* Header */
+.top-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.app-name{font-size:22px;font-weight:600;letter-spacing:-0.5px}
+.app-name span.t{color:var(--red)}
+.app-name span.l{color:var(--blue)}
+.top-right{display:flex;gap:8px;align-items:center}
+.lang-btn{font-size:11px;padding:4px 9px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .15s}
+.lang-btn.active{background:var(--text);color:var(--bg);border-color:var(--text)}
+.icon-btn{width:34px;height:34px;border-radius:50%;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .15s}
+.icon-btn:hover{background:var(--bg3);color:var(--text)}
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100dvh;
-      max-width: 480px;
-      margin: 0 auto;
-      padding: 0 0 40px;
-      -webkit-font-smoothing: antialiased;
-    }
+/* Zone tabs */
+.zone-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.zone-tab{padding:11px 12px;border-radius:var(--rm);border:1.5px solid var(--border);background:var(--bg2);cursor:pointer;transition:all .2s;text-align:center}
+.zone-tab .dot{width:7px;height:7px;border-radius:50%;margin:0 auto 5px;background:var(--border);transition:background .2s}
+.zone-tab .zl{font-size:13px;font-weight:600}
+.zone-tab .zs{font-size:10px;color:var(--muted);margin-top:2px}
+.zone-tab.active.terrain{border-color:var(--red);background:rgba(216,90,48,.12)}
+.zone-tab.active.terrain .dot{background:var(--red)}
+.zone-tab.active.liens{border-color:var(--blue);background:rgba(55,138,221,.12)}
+.zone-tab.active.liens .dot{background:var(--blue)}
 
-    /* ── Top bar ── */
-    .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px 20px 12px;
-      padding-top: max(16px, env(safe-area-inset-top));
-    }
-    .logo { font-size: 20px; font-weight: 600; letter-spacing: -0.3px; }
-    .logo span.dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--red); margin-left: 4px; vertical-align: middle; animation: pulse-dot 2s ease-in-out infinite; }
-    @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.7)} }
-    .topbar-right { display: flex; gap: 8px; align-items: center; }
-    .lang-btn {
-      font-size: 11px; padding: 4px 9px; border-radius: 20px;
-      border: 0.5px solid var(--border2); background: transparent;
-      color: var(--muted); cursor: pointer; transition: all 0.15s;
-    }
-    .lang-btn.active { background: var(--text); color: var(--bg); border-color: var(--text); }
-    .settings-btn {
-      width: 32px; height: 32px; border-radius: 50%;
-      border: 0.5px solid var(--border); background: var(--bg2);
-      color: var(--muted); cursor: pointer; font-size: 15px;
-      display: flex; align-items: center; justify-content: center;
-      transition: background 0.15s;
-    }
-    .settings-btn:hover { background: var(--bg3); }
+/* Mode tabs */
+.mode-tabs{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;padding-bottom:2px}
+.mode-tabs::-webkit-scrollbar{display:none}
+.mode-tab{white-space:nowrap;font-size:12px;padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .15s;flex-shrink:0}
+.mode-tab.active{color:var(--text);border-color:var(--text);background:var(--bg3);font-weight:600}
 
-    /* ── Settings panel ── */
-    .settings-panel {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.8);
-      z-index: 100; display: flex; align-items: flex-end;
-      padding-bottom: env(safe-area-inset-bottom);
-    }
-    .settings-panel.hidden { display: none; }
-    .settings-sheet {
-      background: var(--bg2); border-radius: 20px 20px 0 0;
-      padding: 24px 20px 32px; width: 100%; border-top: 0.5px solid var(--border);
-    }
-    .settings-sheet h2 { font-size: 16px; font-weight: 500; margin-bottom: 20px; }
-    .settings-row { margin-bottom: 16px; }
-    .settings-label { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
-    .api-input {
-      width: 100%; background: var(--bg3); border: 0.5px solid var(--border);
-      color: var(--text); border-radius: var(--r-sm);
-      padding: 10px 12px; font-size: 14px; font-family: monospace;
-    }
-    .api-input:focus { outline: none; border-color: var(--border2); }
-    .api-hint { font-size: 11px; color: var(--muted); margin-top: 5px; }
-    .api-hint a { color: var(--blue); text-decoration: none; }
-    .settings-save {
-      width: 100%; padding: 12px; border-radius: var(--r);
-      border: none; background: var(--text); color: var(--bg);
-      font-size: 14px; font-weight: 500; cursor: pointer; margin-top: 8px;
-      transition: opacity 0.15s;
-    }
-    .settings-save:hover { opacity: 0.85; }
-    .settings-close {
-      width: 100%; padding: 10px; border-radius: var(--r);
-      border: 0.5px solid var(--border); background: transparent;
-      color: var(--muted); font-size: 14px; cursor: pointer; margin-top: 6px;
-    }
-    .api-status { font-size: 11px; margin-top: 6px; padding: 4px 8px; border-radius: 6px; display: inline-block; }
-    .api-status.ok { background: rgba(30,160,100,0.15); color: #4ec990; }
-    .api-status.missing { background: rgba(216,90,48,0.12); color: var(--red); }
+/* Cards */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:10px}
+.card.terrain-accent{border-left:3px solid var(--red)}
+.card.liens-accent{border-left:3px solid var(--blue)}
+.q-label{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:7px}
+.q-text{font-size:15px;color:var(--text);margin-bottom:12px;line-height:1.5}
+textarea{width:100%;min-height:70px;font-size:14px;font-family:inherit;resize:none;padding:10px 12px;border-radius:var(--rs);border:1px solid var(--border);background:var(--bg3);color:var(--text);transition:border .15s;line-height:1.5}
+textarea:focus{outline:none;border-color:var(--muted)}
+input[type=range]{width:100%;accent-color:var(--red)}
+.zone-tab.active.liens ~ * input[type=range]{accent-color:var(--blue)}
 
-    /* ── Zone tabs ── */
-    .zone-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0 20px 16px; }
-    .zone-tab {
-      padding: 12px; border-radius: var(--r);
-      border: 1px solid var(--border); background: var(--bg2);
-      cursor: pointer; transition: all 0.2s; text-align: center;
-    }
-    .zone-tab .zdot {
-      width: 8px; height: 8px; border-radius: 50%;
-      background: var(--border2); margin: 0 auto 6px; transition: background 0.2s;
-    }
-    .zone-tab .zlabel { font-size: 13px; font-weight: 500; }
-    .zone-tab .zsub { font-size: 11px; color: var(--muted); margin-top: 2px; }
-    .zone-tab.active.terrain { border-color: var(--red-mid); background: var(--red-light); }
-    .zone-tab.active.terrain .zdot { background: var(--red); }
-    .zone-tab.active.liens { border-color: var(--blue-mid); background: var(--blue-light); }
-    .zone-tab.active.liens .zdot { background: var(--blue); }
+.btn{display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:10px 18px;border-radius:20px;border:1px solid var(--border);background:var(--text);color:var(--bg);font-size:13px;font-weight:600;cursor:pointer;transition:opacity .15s}
+.btn:hover{opacity:.85}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.btn.secondary{background:transparent;color:var(--text);border-color:var(--border)}
+.btn.danger{background:#E24B4A;color:#fff;border-color:#E24B4A}
 
-    /* ── Mode tabs ── */
-    .mode-tabs { display: flex; gap: 6px; padding: 0 20px 16px; overflow-x: auto; scrollbar-width: none; }
-    .mode-tabs::-webkit-scrollbar { display: none; }
-    .mode-tab {
-      white-space: nowrap; font-size: 12px; padding: 7px 14px; border-radius: 20px;
-      border: 0.5px solid var(--border); background: transparent;
-      color: var(--muted); cursor: pointer; transition: all 0.15s;
-    }
-    .mode-tab.active { color: var(--text); border-color: var(--border2); background: var(--bg3); font-weight: 500; }
+.crisis-trigger{width:100%;padding:16px;border-radius:var(--r);border:1.5px solid var(--red);background:rgba(216,90,48,.1);color:var(--red);font-size:15px;font-weight:600;cursor:pointer;transition:all .2s}
+.crisis-trigger:hover{background:var(--red);color:#fff}
+.crisis-trigger.liens{border-color:var(--blue);background:rgba(55,138,221,.1);color:var(--blue)}
+.crisis-trigger.liens:hover{background:var(--blue);color:#fff}
 
-    /* ── Cards ── */
-    .card {
-      background: var(--bg2); border: 0.5px solid var(--border);
-      border-radius: var(--r); padding: 16px; margin: 0 20px 12px;
-    }
-    .card.terrain-accent { border-left: 2.5px solid var(--red); }
-    .card.liens-accent { border-left: 2.5px solid var(--blue); }
-    .q-label { font-size: 10px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 8px; }
-    .q-text { font-size: 15px; color: var(--text); margin-bottom: 12px; line-height: 1.5; }
+.ai-response{background:var(--bg3);border-radius:var(--rs);padding:12px 14px;font-size:14px;line-height:1.7;color:var(--text);border:1px solid var(--border);margin-top:10px;white-space:pre-wrap}
+.exercise-card{background:var(--bg3);border-radius:var(--rs);padding:12px 14px;border:1px solid var(--border);margin-top:10px}
+.exercise-title{font-size:10px;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+.exercise-body{font-size:14px;line-height:1.6}
 
-    textarea {
-      width: 100%; min-height: 75px; font-size: 14px;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      resize: none; padding: 10px 12px;
-      border-radius: var(--r-sm); border: 0.5px solid var(--border);
-      background: var(--bg3); color: var(--text); transition: border 0.15s;
-      line-height: 1.5;
-    }
-    textarea:focus { outline: none; border-color: var(--border2); }
+.loading{display:flex;gap:5px;align-items:center;padding:12px 0}
+.dot-a{width:6px;height:6px;border-radius:50%;background:var(--muted);animation:pulse 1.2s ease-in-out infinite}
+.dot-a:nth-child(2){animation-delay:.2s}
+.dot-a:nth-child(3){animation-delay:.4s}
+@keyframes pulse{0%,80%,100%{opacity:.3;transform:scale(.8)}40%{opacity:1;transform:scale(1)}}
 
-    .slider-row { display: flex; align-items: center; gap: 12px; margin: 8px 0 12px; }
-    input[type="range"] {
-      flex: 1; -webkit-appearance: none; height: 4px;
-      background: var(--bg3); border-radius: 2px; outline: none;
-    }
-    input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance: none; width: 20px; height: 20px;
-      border-radius: 50%; background: var(--text); cursor: pointer;
-      border: 3px solid var(--bg2); box-shadow: 0 0 0 1px var(--border2);
-    }
-    .intensity-val { font-size: 22px; font-weight: 500; min-width: 28px; text-align: right; }
+/* Patterns */
+.ptag{display:inline-block;font-size:11px;padding:3px 10px;border-radius:12px;background:var(--bg3);border:1px solid var(--border);color:var(--muted);margin:3px}
+.ptag.terrain{background:rgba(216,90,48,.15);color:var(--red-mid);border-color:rgba(216,90,48,.3)}
+.ptag.liens{background:rgba(55,138,221,.15);color:var(--blue-mid);border-color:rgba(55,138,221,.3)}
 
-    .submit-btn {
-      margin-top: 10px; padding: 11px 20px; border-radius: 20px;
-      border: none; background: var(--text); color: var(--bg);
-      font-size: 13px; font-weight: 500; cursor: pointer; transition: opacity 0.15s;
-    }
-    .submit-btn:hover { opacity: 0.85; }
-    .submit-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.streak{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+.sday{width:26px;height:26px;border-radius:5px;font-size:10px;display:flex;align-items:center;justify-content:center;color:var(--muted);background:var(--bg3);border:1px solid var(--border)}
+.sday.done.terrain{background:rgba(216,90,48,.2);color:var(--red-mid);border-color:rgba(216,90,48,.4)}
+.sday.done.liens{background:rgba(55,138,221,.2);color:var(--blue-mid);border-color:rgba(55,138,221,.4)}
 
-    /* ── Crisis button ── */
-    .crisis-btn {
-      width: 100%; padding: 16px; border-radius: var(--r);
-      border: 1.5px solid var(--red-mid); background: var(--red-light);
-      color: var(--red); font-size: 15px; font-weight: 500; cursor: pointer;
-      transition: all 0.2s;
-    }
-    .crisis-btn:active { background: var(--red); color: #fff; }
-    .crisis-btn.liens-mode { border-color: var(--blue-mid); background: var(--blue-light); color: var(--blue); }
-    .crisis-btn.liens-mode:active { background: var(--blue); color: #fff; }
+/* Settings overlay */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;display:flex;align-items:flex-end;justify-content:center;padding:0 0 var(--safe-bottom)}
+.sheet{background:var(--bg2);border-radius:var(--r) var(--r) 0 0;width:100%;max-width:480px;padding:20px 20px calc(20px + var(--safe-bottom));max-height:85vh;overflow-y:auto}
+.sheet-handle{width:36px;height:4px;border-radius:2px;background:var(--border);margin:0 auto 18px}
+.sheet h2{font-size:17px;font-weight:600;margin-bottom:16px}
+.field-label{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+input[type=text],input[type=password]{width:100%;padding:11px 14px;border-radius:var(--rs);border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:14px;font-family:inherit}
+input[type=text]:focus,input[type=password]:focus{outline:none;border-color:var(--muted)}
+.api-status{margin-top:8px;font-size:12px;padding:6px 10px;border-radius:var(--rs)}
+.api-status.ok{background:rgba(29,158,117,.15);color:#5DCAA5;border:1px solid rgba(29,158,117,.3)}
+.api-status.err{background:rgba(226,75,74,.15);color:#F09595;border:1px solid rgba(226,75,74,.3)}
+.api-status.none{background:var(--bg3);color:var(--muted);border:1px solid var(--border)}
 
-    /* ── AI response ── */
-    .ai-response {
-      background: var(--bg3); border-radius: var(--r-sm);
-      padding: 13px 14px; font-size: 14px; line-height: 1.75;
-      color: var(--text); border: 0.5px solid var(--border); margin-top: 10px;
-      white-space: pre-wrap;
-    }
-    .exercise-card { background: var(--bg3); border-radius: var(--r-sm); padding: 13px 14px; border: 0.5px solid var(--border); margin-top: 10px; }
-    .exercise-title { font-size: 10px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 8px; }
+/* Bottom nav */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--border);display:flex;justify-content:center;padding:0 0 var(--safe-bottom)}
+.bnav-inner{display:flex;width:100%;max-width:480px}
+.bnav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 6px;cursor:pointer;border:none;background:transparent;color:var(--muted);font-size:10px;transition:color .15s}
+.bnav-btn.active{color:var(--text)}
+.bnav-icon{font-size:20px;line-height:1}
 
-    /* ── Loading dots ── */
-    .loading { display: flex; gap: 5px; align-items: center; padding: 10px 0; }
-    .dot-a { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); animation: dp 1.2s ease-in-out infinite; }
-    .dot-a:nth-child(2) { animation-delay: 0.2s; }
-    .dot-a:nth-child(3) { animation-delay: 0.4s; }
-    @keyframes dp { 0%,80%,100%{opacity:0.3;transform:scale(0.8)} 40%{opacity:1;transform:scale(1)} }
-
-    /* ── Patterns ── */
-    .pattern-tag {
-      display: inline-block; font-size: 11px; padding: 4px 10px;
-      border-radius: 14px; margin: 3px;
-      background: var(--bg3); border: 0.5px solid var(--border); color: var(--muted);
-    }
-    .pattern-tag.terrain { background: var(--red-light); color: #f0997b; border-color: var(--red-mid); }
-    .pattern-tag.liens { background: var(--blue-light); color: #85B7EB; border-color: var(--blue-mid); }
-
-    .streak { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
-    .streak-day {
-      width: 34px; height: 34px; border-radius: 6px; font-size: 11px;
-      display: flex; align-items: center; justify-content: center;
-      color: var(--muted); background: var(--bg3); border: 0.5px solid var(--border);
-      flex-direction: column; gap: 1px;
-    }
-    .streak-day .sd-label { font-size: 9px; }
-    .streak-day.done.terrain { background: var(--red-light); color: #f0997b; border-color: var(--red-mid); }
-    .streak-day.done.liens { background: var(--blue-light); color: #85B7EB; border-color: var(--blue-mid); }
-
-    /* ── No API key warning ── */
-    .no-key-warning {
-      margin: 0 20px 12px; padding: 12px 14px; border-radius: var(--r);
-      background: rgba(216,90,48,0.08); border: 0.5px solid var(--red-mid);
-      font-size: 13px; color: #f0997b; line-height: 1.5;
-    }
-    .no-key-warning a { color: var(--red); text-decoration: underline; cursor: pointer; }
-
-    .hidden { display: none !important; }
-    .section-title { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 8px; }
-  </style>
+.hidden{display:none!important}
+.divider{height:1px;background:var(--border);margin:14px 0}
+</style>
 </head>
 <body>
 
-<!-- Top bar -->
-<div class="topbar">
-  <div class="logo">Signal<span class="dot"></span></div>
-  <div class="topbar-right">
-    <button class="lang-btn active" onclick="setLang('fr')">FR</button>
-    <button class="lang-btn" onclick="setLang('en')">EN</button>
-    <button class="settings-btn" onclick="openSettings()" title="Paramètres">⚙</button>
+<div class="app">
+  <div class="top-bar">
+    <div class="app-name">S<span class="t">i</span><span class="l">g</span>nal</div>
+    <div class="top-right">
+      <button class="lang-btn active" onclick="setLang('fr')">FR</button>
+      <button class="lang-btn" onclick="setLang('en')">EN</button>
+      <button class="icon-btn" onclick="openSettings()" title="Paramètres">⚙</button>
+    </div>
   </div>
-</div>
 
-<!-- Settings panel -->
-<div class="settings-panel hidden" id="settings-panel" onclick="closeSettingsOutside(event)">
-  <div class="settings-sheet">
-    <h2 id="s-title">Paramètres</h2>
-    <div class="settings-row">
-      <div class="settings-label" id="s-api-label">Clé API Anthropic</div>
-      <input class="api-input" type="password" id="api-key-input" placeholder="sk-ant-...">
-      <div class="api-hint" id="s-api-hint">
-        Obtenir une clé sur <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>.
-        Stockée uniquement dans votre navigateur.
+  <div class="scroll-area">
+
+    <!-- Zone tabs -->
+    <div class="zone-tabs">
+      <div class="zone-tab active terrain" id="zt-terrain" onclick="setZone('terrain')">
+        <div class="dot"></div>
+        <div class="zl" id="zt-terrain-label">Terrain</div>
+        <div class="zs" id="zt-terrain-sub">PTSD professionnel</div>
       </div>
-      <div id="api-status-msg"></div>
+      <div class="zone-tab inactive liens" id="zt-liens" onclick="setZone('liens')">
+        <div class="dot"></div>
+        <div class="zl" id="zt-liens-label">Liens</div>
+        <div class="zs" id="zt-liens-sub">Trauma relationnel</div>
+      </div>
     </div>
-    <button class="settings-save" onclick="saveSettings()" id="s-save">Enregistrer</button>
-    <button class="settings-close" onclick="closeSettings()" id="s-close">Fermer</button>
-  </div>
-</div>
 
-<!-- No API key warning -->
-<div class="no-key-warning hidden" id="no-key-warning">
-  <span id="no-key-text">Clé API manquante — </span>
-  <a onclick="openSettings()" id="no-key-link">configurer →</a>
-</div>
-
-<!-- Zone tabs -->
-<div class="zone-tabs">
-  <div class="zone-tab active terrain" id="zt-terrain" onclick="setZone('terrain')">
-    <div class="zdot"></div>
-    <div class="zlabel" id="zt-terrain-label">Terrain</div>
-    <div class="zsub" id="zt-terrain-sub">PTSD professionnel</div>
-  </div>
-  <div class="zone-tab liens" id="zt-liens" onclick="setZone('liens')">
-    <div class="zdot"></div>
-    <div class="zlabel" id="zt-liens-label">Liens</div>
-    <div class="zsub" id="zt-liens-sub">Trauma relationnel</div>
-  </div>
-</div>
-
-<!-- Mode tabs -->
-<div class="mode-tabs">
-  <button class="mode-tab active" id="mt-soir" onclick="setMode('soir')">Débrief soir</button>
-  <button class="mode-tab" id="mt-crise" onclick="setMode('crise')">Mode crise</button>
-  <button class="mode-tab" id="mt-patterns" onclick="setMode('patterns')">Patterns</button>
-</div>
-
-<!-- ── VIEW: SOIR ── -->
-<div id="view-soir">
-  <div class="card terrain-accent" id="q1-card">
-    <div class="q-label" id="q1-label">Question 1 / 3</div>
-    <div class="q-text" id="q1-text">En une phrase — qu'est-ce qui a pesé le plus aujourd'hui ?</div>
-    <textarea id="q1-input" rows="3" placeholder="..."></textarea>
-    <button class="submit-btn" onclick="nextQ(1)" id="q1-btn">Suivant →</button>
-  </div>
-  <div class="card terrain-accent hidden" id="q2-card">
-    <div class="q-label" id="q2-label">Question 2 / 3</div>
-    <div class="q-text" id="q2-text">Dans ton corps en ce moment — où ça tire, où ça bloque ?</div>
-    <textarea id="q2-input" rows="3" placeholder="..."></textarea>
-    <button class="submit-btn" onclick="nextQ(2)" id="q2-btn">Suivant →</button>
-  </div>
-  <div class="card terrain-accent hidden" id="q3-card">
-    <div class="q-label" id="q3-label">Question 3 / 3</div>
-    <div class="q-text" id="q3-text">Sur 10 — ton niveau d'intensité aujourd'hui ?</div>
-    <div class="slider-row">
-      <input type="range" min="1" max="10" value="5" id="intensity-slider" oninput="document.getElementById('intensity-val').textContent=this.value">
-      <span class="intensity-val" id="intensity-val">5</span>
+    <!-- Mode tabs -->
+    <div class="mode-tabs">
+      <button class="mode-tab active" id="mt-soir" onclick="setMode('soir')" data-fr="Débrief soir" data-en="Evening debrief">Débrief soir</button>
+      <button class="mode-tab" id="mt-crise" onclick="setMode('crise')" data-fr="Mode crise" data-en="Crisis mode">Mode crise</button>
+      <button class="mode-tab" id="mt-patterns" onclick="setMode('patterns')" data-fr="Patterns" data-en="Patterns">Patterns</button>
     </div>
-    <button class="submit-btn" onclick="submitDebrief()" id="q3-btn">Analyser →</button>
+
+    <!-- VIEW: DEBRIEF SOIR -->
+    <div id="view-soir">
+      <div class="card terrain-accent" id="q1-card">
+        <div class="q-label" id="q1-label">Question 1 / 3</div>
+        <div class="q-text" id="q1-text">En une phrase — qu'est-ce qui a pesé le plus aujourd'hui ?</div>
+        <textarea id="q1-input" placeholder="..."></textarea>
+        <button class="btn" onclick="nextQ(1)" id="q1-btn">Suivant →</button>
+      </div>
+      <div class="card terrain-accent hidden" id="q2-card">
+        <div class="q-label" id="q2-label">Question 2 / 3</div>
+        <div class="q-text" id="q2-text">Dans ton corps en ce moment — où ça tire, où ça bloque ?</div>
+        <textarea id="q2-input" placeholder="..."></textarea>
+        <button class="btn" onclick="nextQ(2)" id="q2-btn">Suivant →</button>
+      </div>
+      <div class="card terrain-accent hidden" id="q3-card">
+        <div class="q-label" id="q3-label">Question 3 / 3</div>
+        <div class="q-text" id="q3-text">Sur 10 — ton niveau d'intensité aujourd'hui ?</div>
+        <div style="display:flex;align-items:center;gap:12px;margin:10px 0 14px">
+          <input type="range" min="1" max="10" value="5" id="intensity-slider" oninput="document.getElementById('ival').textContent=this.value" style="flex:1">
+          <span id="ival" style="font-size:22px;font-weight:700;min-width:28px;color:var(--text)">5</span>
+        </div>
+        <button class="btn" onclick="submitDebrief()" id="q3-btn" data-fr="Analyser →" data-en="Analyze →">Analyser →</button>
+      </div>
+      <div id="debrief-resp" class="hidden"></div>
+      <button class="btn secondary hidden" id="reset-btn" onclick="resetDebrief()" style="margin-top:4px" data-fr="Nouvelle session" data-en="New session">Nouvelle session</button>
+    </div>
+
+    <!-- VIEW: CRISE -->
+    <div id="view-crise" class="hidden">
+      <div class="card terrain-accent" id="crisis-card">
+        <div class="q-text" id="crisis-prompt">Dis-moi en une phrase ce qui se passe là, maintenant.</div>
+        <textarea id="crisis-input" placeholder="..." style="min-height:60px;margin-top:10px"></textarea>
+        <button class="btn" onclick="submitCrisis()" id="crisis-btn" data-fr="Exercice immédiat →" data-en="Immediate exercise →">Exercice immédiat →</button>
+      </div>
+      <div id="crisis-resp" class="hidden"></div>
+    </div>
+
+    <!-- VIEW: PATTERNS -->
+    <div id="view-patterns" class="hidden">
+      <div class="card">
+        <div class="q-label" id="p-label" data-fr="Patterns détectés" data-en="Detected patterns">Patterns détectés</div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:12px" id="p-intro">Après quelques sessions, Signal reflète tes schémas récurrents.</p>
+        <div style="margin-bottom:10px">
+          <div style="font-size:11px;color:var(--muted);margin-bottom:5px" id="p-terrain-label" data-fr="Zone Terrain" data-en="Field zone">Zone Terrain</div>
+          <span class="ptag terrain" data-fr="hypervigilance" data-en="hypervigilance">hypervigilance</span>
+          <span class="ptag terrain" data-fr="contrôle" data-en="control">contrôle</span>
+          <span class="ptag terrain" data-fr="dissociation légère" data-en="mild dissociation">dissociation légère</span>
+        </div>
+        <div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:5px" id="p-liens-label" data-fr="Zone Liens" data-en="Bonds zone">Zone Liens</div>
+          <span class="ptag liens" data-fr="méfiance préemptive" data-en="preemptive distrust">méfiance préemptive</span>
+          <span class="ptag liens" data-fr="test de loyauté" data-en="loyalty testing">test de loyauté</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="q-label" id="streak-label" data-fr="Régularité — 7 derniers jours" data-en="Consistency — last 7 days">Régularité — 7 derniers jours</div>
+        <div class="streak" id="streak-row"></div>
+      </div>
+      <div class="card">
+        <div class="q-label" id="insight-label" data-fr="Analyse IA" data-en="AI analysis">Analyse IA</div>
+        <button class="btn" onclick="getInsight()" id="insight-btn" data-fr="Générer →" data-en="Generate →">Générer →</button>
+        <div id="insight-resp"></div>
+      </div>
+    </div>
+
+  </div><!-- end scroll-area -->
+</div><!-- end app -->
+
+<!-- Bottom nav -->
+<div class="bottom-nav">
+  <div class="bnav-inner">
+    <button class="bnav-btn active" id="bnav-soir" onclick="setMode('soir')">
+      <span class="bnav-icon">◐</span>
+      <span id="bn-soir" data-fr="Soir" data-en="Evening">Soir</span>
+    </button>
+    <button class="bnav-btn" id="bnav-crise" onclick="setMode('crise')">
+      <span class="bnav-icon">⚡</span>
+      <span id="bn-crise" data-fr="Crise" data-en="Crisis">Crise</span>
+    </button>
+    <button class="bnav-btn" id="bnav-patterns" onclick="setMode('patterns')">
+      <span class="bnav-icon">≋</span>
+      <span id="bn-patterns" data-fr="Patterns" data-en="Patterns">Patterns</span>
+    </button>
   </div>
-  <div id="debrief-response" class="hidden" style="margin: 0 20px;"></div>
 </div>
 
-<!-- ── VIEW: CRISE ── -->
-<div id="view-crise" class="hidden">
-  <div class="card terrain-accent" id="crisis-card">
-    <div class="q-text" id="crisis-prompt">Dis-moi en une phrase ce qui se passe là, maintenant.</div>
-    <textarea id="crisis-input" rows="3" placeholder="..."></textarea>
-    <button class="submit-btn" onclick="submitCrisis()" id="crisis-btn">Obtenir un exercice →</button>
-  </div>
-  <div id="crisis-response" class="hidden" style="margin: 0 20px;"></div>
-</div>
+<!-- Settings Sheet -->
+<div class="overlay hidden" id="settings-overlay" onclick="handleOverlayClick(event)">
+  <div class="sheet" id="settings-sheet">
+    <div class="sheet-handle"></div>
+    <h2 id="s-title">Paramètres</h2>
 
-<!-- ── VIEW: PATTERNS ── -->
-<div id="view-patterns" class="hidden">
-  <div class="card">
-    <div class="q-label" id="p-title">Patterns détectés</div>
-    <p style="font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.5" id="p-intro">
-      Après quelques sessions, Signal commence à refléter tes schémas récurrents.
+    <div class="field-label" id="s-api-label">Clé API Google Gemini</div>
+    <input type="password" id="api-key-input" placeholder="AIza..." autocomplete="off" autocorrect="off" spellcheck="false">
+    <div id="api-status" class="api-status none">Aucune clé configurée</div>
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <button class="btn" onclick="saveApiKey()" id="s-save-btn">Enregistrer</button>
+      <button class="btn secondary" onclick="testApiKey()" id="s-test-btn">Tester</button>
+    </div>
+    <p style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.6" id="s-api-note">
+      Ta clé est stockée uniquement dans ce navigateur (localStorage). Elle n'est jamais envoyée ailleurs qu'à generativelanguage.googleapis.com.
     </p>
-    <div id="tags-terrain-row">
-      <div class="section-title" id="p-terrain-label">Zone Terrain</div>
-      <span class="pattern-tag terrain" id="pt1">hypervigilance</span>
-      <span class="pattern-tag terrain" id="pt2">contrôle</span>
-      <span class="pattern-tag terrain" id="pt3">dissociation légère</span>
-    </div>
-    <div style="margin-top:12px" id="tags-liens-row">
-      <div class="section-title" id="p-liens-label">Zone Liens</div>
-      <span class="pattern-tag liens" id="pl1">méfiance préemptive</span>
-      <span class="pattern-tag liens" id="pl2">test de loyauté</span>
-    </div>
-  </div>
 
-  <div class="card">
-    <div class="q-label" id="p-streak-label">Régularité — 7 derniers jours</div>
-    <div class="streak" id="streak-row"></div>
-  </div>
+    <div class="divider"></div>
 
-  <div class="card">
-    <div class="q-label" id="p-insight-label">Analyse IA</div>
-    <button class="submit-btn" onclick="getInsight()" id="insight-btn" style="margin-top:0">Générer →</button>
-    <div id="insight-response"></div>
+    <div class="field-label" id="s-notif-label">Rappel quotidien</div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:14px">
+        <input type="checkbox" id="notif-toggle" onchange="toggleNotif(this.checked)" style="width:16px;height:16px;accent-color:var(--red)">
+        <span id="s-notif-text">Notification le soir</span>
+      </label>
+    </div>
+    <input type="time" id="notif-time" value="21:00" onchange="saveNotifTime(this.value)"
+      style="padding:8px 12px;border-radius:var(--rs);border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:14px;width:130px">
+
+    <div class="divider"></div>
+
+    <div class="field-label" id="s-data-label">Données</div>
+    <button class="btn danger" onclick="clearAllData()" id="s-clear-btn" style="font-size:12px">Effacer toutes les données</button>
+
+    <div class="divider"></div>
+    <button class="btn secondary" onclick="closeSettings()" style="width:100%;justify-content:center" id="s-close-btn">Fermer</button>
   </div>
 </div>
 
 <script>
-// ── State ──────────────────────────────────────────────────────
-let lang = 'fr';
-let zone = 'terrain';
+// ── State ────────────────────────────────────────────────────
+let lang = localStorage.getItem('signal-lang') || 'fr';
+let zone = localStorage.getItem('signal-zone') || 'terrain';
 let mode = 'soir';
 
-// ── Translations ───────────────────────────────────────────────
+// ── Translations ─────────────────────────────────────────────
 const T = {
   fr: {
-    stitle: 'Paramètres', sapiLabel: 'Clé API Anthropic',
-    sapiHint: 'Obtenir une clé sur console.anthropic.com. Stockée uniquement dans votre navigateur.',
-    ssave: 'Enregistrer', sclose: 'Fermer',
-    apiOk: 'Clé enregistrée', apiMissing: 'Clé non configurée',
-    noKeyText: 'Clé API manquante — ', noKeyLink: 'configurer →',
-    ztTerrain: 'Terrain', ztTerrainSub: 'PTSD professionnel',
-    ztLiens: 'Liens', ztLiensSub: 'Trauma relationnel',
-    mtSoir: 'Débrief soir', mtCrise: 'Mode crise', mtPatterns: 'Patterns',
-    q1: "En une phrase — qu'est-ce qui a pesé le plus aujourd'hui ?",
-    q1l: "Ce soir — qu'est-ce qui a été le plus difficile dans tes interactions ?",
-    q2: "Dans ton corps en ce moment — où ça tire, où ça bloque ?",
-    q1label: 'Question 1 / 3', q2label: 'Question 2 / 3', q3label: 'Question 3 / 3',
-    q3: "Sur 10 — ton niveau d'intensité aujourd'hui ?",
-    next: 'Suivant →', analyze: 'Analyser →',
-    crisisPrompt: "Dis-moi en une phrase ce qui se passe là, maintenant.",
-    crisisBtn: 'Obtenir un exercice →',
-    pTitle: 'Patterns détectés',
-    pIntro: 'Après quelques sessions, Signal commence à refléter tes schémas récurrents.',
-    pTerrain: 'Zone Terrain', pLiens: 'Zone Liens',
-    pStreakLabel: 'Régularité — 7 derniers jours',
-    pInsightLabel: 'Analyse IA', insightBtn: 'Générer →',
-    pt1:'hypervigilance', pt2:'contrôle', pt3:'dissociation légère',
-    pl1:'méfiance préemptive', pl2:'test de loyauté',
-    exerciseLabel: 'Exercice immédiat',
-    days: ['L','M','M','J','V','S','D'],
-    loading: '...',
-    errNoKey: 'Configure ta clé API dans les paramètres ⚙ pour activer l\'IA.',
-    errConn: 'Erreur de connexion à l\'API.',
+    zt_terrain:'Terrain', zt_terrain_sub:'PTSD professionnel',
+    zt_liens:'Liens', zt_liens_sub:'Trauma relationnel',
+    q1t:'En une phrase — qu\'est-ce qui a pesé le plus aujourd\'hui ?',
+    q1l:'Ce soir — qu\'est-ce qui a été le plus difficile dans tes interactions ?',
+    q2:'Dans ton corps en ce moment — où ça tire, où ça bloque ?',
+    q3:'Sur 10 — ton niveau d\'intensité aujourd\'hui ?',
+    crisis_prompt:'Dis-moi en une phrase ce qui se passe là, maintenant.',
+    p_intro:'Après quelques sessions, Signal reflète tes schémas récurrents.',
+    s_title:'Paramètres',
+    s_api_label:'Clé API Google Gemini',
+    s_api_note:'Ta clé est stockée uniquement dans ce navigateur (localStorage). Elle n\'est jamais envoyée ailleurs qu\'à generativelanguage.googleapis.com.',
+    s_notif_label:'Rappel quotidien',
+    s_notif_text:'Notification le soir',
+    s_data_label:'Données',
+    api_status_none:'Aucune clé configurée',
+    api_status_ok:'Clé valide ✓',
+    api_status_err:'Clé invalide ou erreur réseau',
+    api_status_testing:'Test en cours...',
+    days:['L','M','M','J','V','S','D'],
   },
   en: {
-    stitle: 'Settings', sapiLabel: 'Anthropic API Key',
-    sapiHint: 'Get a key at console.anthropic.com. Stored only in your browser.',
-    ssave: 'Save', sclose: 'Close',
-    apiOk: 'Key saved', apiMissing: 'Key not configured',
-    noKeyText: 'Missing API key — ', noKeyLink: 'configure →',
-    ztTerrain: 'Field', ztTerrainSub: 'Professional PTSD',
-    ztLiens: 'Bonds', ztLiensSub: 'Relational trauma',
-    mtSoir: 'Evening debrief', mtCrise: 'Crisis mode', mtPatterns: 'Patterns',
-    q1: "In one sentence — what weighed the most today?",
-    q1l: "Tonight — what was hardest in your interactions today?",
-    q2: "In your body right now — where does it pull, where does it block?",
-    q1label: 'Question 1 / 3', q2label: 'Question 2 / 3', q3label: 'Question 3 / 3',
-    q3: "Out of 10 — your intensity level today?",
-    next: 'Next →', analyze: 'Analyze →',
-    crisisPrompt: "Tell me in one sentence what's happening right now.",
-    crisisBtn: 'Get an exercise →',
-    pTitle: 'Detected patterns',
-    pIntro: 'After a few sessions, Signal starts reflecting your recurring patterns.',
-    pTerrain: 'Field zone', pLiens: 'Bonds zone',
-    pStreakLabel: 'Consistency — last 7 days',
-    pInsightLabel: 'AI analysis', insightBtn: 'Generate →',
-    pt1:'hypervigilance', pt2:'control', pt3:'mild dissociation',
-    pl1:'preemptive distrust', pl2:'loyalty testing',
-    exerciseLabel: 'Immediate exercise',
-    days: ['M','T','W','T','F','S','S'],
-    loading: '...',
-    errNoKey: 'Configure your API key in settings ⚙ to enable AI.',
-    errConn: 'Connection error.',
+    zt_terrain:'Field', zt_terrain_sub:'Professional PTSD',
+    zt_liens:'Bonds', zt_liens_sub:'Relational trauma',
+    q1t:'In one sentence — what weighed the most today?',
+    q1l:'Tonight — what was hardest in your interactions today?',
+    q2:'In your body right now — where does it pull, where does it block?',
+    q3:'Out of 10 — your intensity level today?',
+    crisis_prompt:'Tell me in one sentence what\'s happening right now.',
+    p_intro:'After a few sessions, Signal starts reflecting your recurring patterns.',
+    s_title:'Settings',
+    s_api_label:'Google Gemini API Key',
+    s_api_note:'Your key is stored only in this browser (localStorage). It is never sent anywhere except generativelanguage.googleapis.com.',
+    s_notif_label:'Daily reminder',
+    s_notif_text:'Evening notification',
+    s_data_label:'Data',
+    api_status_none:'No key configured',
+    api_status_ok:'Key valid ✓',
+    api_status_err:'Invalid key or network error',
+    api_status_testing:'Testing...',
+    days:['M','T','W','T','F','S','S'],
   }
 };
 
-// ── Settings ───────────────────────────────────────────────────
-function getApiKey() { return localStorage.getItem('signal_api_key') || ''; }
-function openSettings() {
-  document.getElementById('settings-panel').classList.remove('hidden');
-  document.getElementById('api-key-input').value = getApiKey();
-  updateApiStatus();
-}
-function closeSettings() { document.getElementById('settings-panel').classList.add('hidden'); }
-function closeSettingsOutside(e) { if (e.target === document.getElementById('settings-panel')) closeSettings(); }
-function saveSettings() {
-  const key = document.getElementById('api-key-input').value.trim();
-  if (key) localStorage.setItem('signal_api_key', key);
-  else localStorage.removeItem('signal_api_key');
-  updateApiStatus();
-  checkApiKey();
-  setTimeout(closeSettings, 600);
-}
-function updateApiStatus() {
-  const t = T[lang]; const key = getApiKey();
-  const el = document.getElementById('api-status-msg');
-  if (key) { el.innerHTML = `<span class="api-status ok">${t.apiOk}</span>`; }
-  else { el.innerHTML = `<span class="api-status missing">${t.apiMissing}</span>`; }
-}
-function checkApiKey() {
-  const warn = document.getElementById('no-key-warning');
-  if (!getApiKey()) warn.classList.remove('hidden');
-  else warn.classList.add('hidden');
-}
-
-// ── Language ───────────────────────────────────────────────────
+// ── Lang ─────────────────────────────────────────────────────
 function setLang(l) {
   lang = l;
+  localStorage.setItem('signal-lang', l);
   document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent === l.toUpperCase()));
   applyTranslations();
 }
+
 function applyTranslations() {
   const t = T[lang];
-  const ids = {
-    's-title': t.stitle, 's-api-label': t.sapiLabel, 's-api-hint': t.sapiHint,
-    's-save': t.ssave, 's-close': t.sclose,
-    'no-key-text': t.noKeyText, 'no-key-link': t.noKeyLink,
-    'zt-terrain-label': t.ztTerrain, 'zt-terrain-sub': t.ztTerrainSub,
-    'zt-liens-label': t.ztLiens, 'zt-liens-sub': t.ztLiensSub,
-    'mt-soir': t.mtSoir, 'mt-crise': t.mtCrise, 'mt-patterns': t.mtPatterns,
-    'q1-label': t.q1label, 'q2-label': t.q2label, 'q3-label': t.q3label,
-    'q1-text': zone === 'terrain' ? t.q1 : t.q1l,
-    'q2-text': t.q2, 'q3-text': t.q3,
-    'q1-btn': t.next, 'q2-btn': t.next, 'q3-btn': t.analyze,
-    'crisis-prompt': t.crisisPrompt, 'crisis-btn': t.crisisBtn,
-    'p-title': t.pTitle, 'p-intro': t.pIntro,
-    'p-terrain-label': t.pTerrain, 'p-liens-label': t.pLiens,
-    'p-streak-label': t.pStreakLabel, 'p-insight-label': t.pInsightLabel,
-    'insight-btn': t.insightBtn,
-    'pt1': t.pt1, 'pt2': t.pt2, 'pt3': t.pt3, 'pl1': t.pl1, 'pl2': t.pl2,
-  };
-  for (const [id, val] of Object.entries(ids)) {
-    const el = document.getElementById(id);
-    if (el) el.textContent = val;
-  }
-  renderStreak();
+  document.getElementById('zt-terrain-label').textContent = t.zt_terrain;
+  document.getElementById('zt-terrain-sub').textContent = t.zt_terrain_sub;
+  document.getElementById('zt-liens-label').textContent = t.zt_liens;
+  document.getElementById('zt-liens-sub').textContent = t.zt_liens_sub;
+  document.getElementById('q1-text').textContent = zone === 'terrain' ? t.q1t : t.q1l;
+  document.getElementById('q2-text').textContent = t.q2;
+  document.getElementById('q3-text').textContent = t.q3;
+  document.getElementById('crisis-prompt').textContent = t.crisis_prompt;
+  document.getElementById('p-intro').textContent = t.p_intro;
+  document.getElementById('s-title').textContent = t.s_title;
+  document.getElementById('s-api-label').textContent = t.s_api_label;
+  document.getElementById('s-api-note').textContent = t.s_api_note;
+  document.getElementById('s-notif-label').textContent = t.s_notif_label;
+  document.getElementById('s-notif-text').textContent = t.s_notif_text;
+  document.getElementById('s-data-label').textContent = t.s_data_label;
+  // data-fr/data-en elements
+  document.querySelectorAll('[data-fr]').forEach(el => {
+    el.textContent = el.getAttribute('data-' + lang) || el.textContent;
+  });
+  // Streak days
+  buildStreak();
   updateApiStatus();
 }
 
-// ── Zone ───────────────────────────────────────────────────────
+// ── Zone ─────────────────────────────────────────────────────
 function setZone(z) {
   zone = z;
-  ['terrain','liens'].forEach(v => {
-    document.getElementById('zt-' + v).className = 'zone-tab ' + v + (v === z ? ' active' : '');
-  });
+  localStorage.setItem('signal-zone', z);
+  document.getElementById('zt-terrain').className = 'zone-tab ' + (z==='terrain' ? 'active' : 'inactive') + ' terrain';
+  document.getElementById('zt-liens').className   = 'zone-tab ' + (z==='liens'   ? 'active' : 'inactive') + ' liens';
   const accent = z === 'terrain' ? 'terrain-accent' : 'liens-accent';
-  ['q1-card','q2-card','q3-card','crisis-card'].forEach(id => {
+  ['q1-card','q2-card','q3-card'].forEach(id => {
     const el = document.getElementById(id);
-    if (el) { el.className = el.className.replace(/terrain-accent|liens-accent/g, '').trim() + ' ' + accent; }
+    el.className = el.className.replace(/(terrain|liens)-accent/g, '') + ' ' + accent;
   });
+  document.getElementById('crisis-card').className = 'card ' + accent;
+  // Update range color via CSS var tweak
+  document.getElementById('intensity-slider').style.accentColor = z === 'terrain' ? 'var(--red)' : 'var(--blue)';
   resetDebrief();
   applyTranslations();
 }
 
-// ── Mode ───────────────────────────────────────────────────────
+// ── Mode ─────────────────────────────────────────────────────
 function setMode(m) {
   mode = m;
   ['soir','crise','patterns'].forEach(v => {
-    document.getElementById('view-' + v).classList.toggle('hidden', v !== m);
-    document.getElementById('mt-' + v).classList.toggle('active', v === m);
+    document.getElementById('view-'+v).classList.toggle('hidden', v!==m);
+    document.getElementById('mt-'+v).classList.toggle('active', v===m);
+    document.getElementById('bnav-'+v).classList.toggle('active', v===m);
   });
 }
 
-// ── Debrief ────────────────────────────────────────────────────
+// ── Debrief ──────────────────────────────────────────────────
 function resetDebrief() {
-  ['q1','q2'].forEach(q => { const el = document.getElementById(q + '-input'); if (el) el.value = ''; });
+  ['q1','q2'].forEach(q => { const el = document.getElementById(q+'-input'); if(el) el.value=''; });
   document.getElementById('q1-card').classList.remove('hidden');
   document.getElementById('q2-card').classList.add('hidden');
   document.getElementById('q3-card').classList.add('hidden');
-  const r = document.getElementById('debrief-response');
-  r.classList.add('hidden'); r.innerHTML = '';
+  document.getElementById('debrief-resp').classList.add('hidden');
+  document.getElementById('debrief-resp').innerHTML = '';
+  document.getElementById('reset-btn').classList.add('hidden');
   document.getElementById('intensity-slider').value = 5;
-  document.getElementById('intensity-val').textContent = '5';
+  document.getElementById('ival').textContent = '5';
 }
+
 function nextQ(n) {
-  const val = document.getElementById('q' + n + '-input').value.trim();
+  const val = document.getElementById('q'+n+'-input').value.trim();
   if (!val) return;
-  document.getElementById('q' + n + '-card').classList.add('hidden');
-  document.getElementById('q' + (n+1) + '-card').classList.remove('hidden');
-}
-
-async function callAI(systemPrompt, userMsg) {
-  const key = getApiKey();
-  if (!key) return { error: T[lang].errNoKey };
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        system: systemPrompt,
-        messages: [{ role: 'user', content: userMsg }]
-      })
-    });
-    const data = await res.json();
-    if (data.error) return { error: data.error.message || T[lang].errConn };
-    return { text: data.content.map(i => i.text || '').join('') };
-  } catch(e) {
-    return { error: T[lang].errConn };
-  }
-}
-
-function loading() {
-  return '<div class="loading"><div class="dot-a"></div><div class="dot-a"></div><div class="dot-a"></div></div>';
+  document.getElementById('q'+n+'-card').classList.add('hidden');
+  document.getElementById('q'+(n+1)+'-card').classList.remove('hidden');
 }
 
 async function submitDebrief() {
+  const key = getApiKey();
+  if (!key) { showNoKeyMsg('debrief-resp'); return; }
   const q1 = document.getElementById('q1-input').value.trim();
   const q2 = document.getElementById('q2-input').value.trim();
   const intensity = document.getElementById('intensity-slider').value;
-  const resp = document.getElementById('debrief-response');
   document.getElementById('q3-card').classList.add('hidden');
+  const resp = document.getElementById('debrief-resp');
   resp.classList.remove('hidden');
   resp.innerHTML = loading();
 
-  const isFr = lang === 'fr';
   const zoneLabel = zone === 'terrain'
-    ? (isFr ? 'PTSD professionnel (terrain de reporter en Guyane)' : 'Professional PTSD (reporting field work in French Guiana)')
-    : (isFr ? 'trauma relationnel (trahisons passées, méfiance dans les liens)' : 'relational trauma (past betrayals, trust issues)');
+    ? (lang==='fr' ? 'PTSD professionnel (terrain de reporter en Guyane)' : 'Professional PTSD (reporting field work in French Guiana)')
+    : (lang==='fr' ? 'trauma relationnel (trahisons passées, méfiance dans les liens)' : 'relational trauma (past betrayals, trust issues)');
 
-  const sys = isFr
-    ? `Tu es un psychologue bienveillant mais direct, spécialisé en trauma et attachement. Tu travailles avec un reporter qui a un PTSD lié au terrain (Guyane) et un trauma relationnel (trahisons, manipulation). Son profil : cerveau hyperactif, méditation passive inefficace, seul "off" = sport extrême à focus total. Zone de travail : ${zoneLabel}. Rôle : 1) refléter sans minimiser 2) identifier un pattern si pertinent 3) proposer 1 exercice actif/corporel/focal (jamais de méditation passive). Direct, concis, 5-7 lignes + exercice.`
-    : `You are a warm but direct psychologist specializing in trauma and attachment. You work with a reporter with PTSD from field work (French Guiana) and relational trauma (betrayals, manipulation). Profile: hyperactive mind, passive meditation doesn't work, only "off" = extreme sports with total focus. Zone: ${zoneLabel}. Role: 1) reflect without minimizing 2) identify a pattern if relevant 3) suggest 1 active/somatic/focus exercise (never passive meditation). Direct, concise, 5-7 lines + exercise.`;
+  const sys = lang==='fr'
+    ? `Tu es un psychologue bienveillant mais direct, spécialisé en trauma et attachement. Tu travailles avec un reporter (PTSD terrain Guyane + trauma relationnel — trahisons, manipulation). Profil : cerveau hyperactif, méditation passive inefficace, seul "off" = sport extrême avec focus total. Zone de travail : ${zoneLabel}. Rôle débrief soir : 1) Refléter sans minimiser. 2) Identifier un pattern si pertinent. 3) Proposer 1 exercice concret actif adapté. Direct, bienveillant, 5-7 lignes max.`
+    : `You are a warm but direct psychologist specializing in trauma and attachment. You work with a reporter (field PTSD + relational trauma — betrayals, manipulation). Profile: hyperactive mind, passive meditation ineffective, only "off" = extreme sports with total focus. Zone: ${zoneLabel}. Role for evening debrief: 1) Reflect without minimizing. 2) Identify a pattern if relevant. 3) Suggest 1 concrete active exercise. Direct, caring, 5-7 lines max.`;
 
-  const msg = isFr
-    ? `Ce soir (zone: ${zone}):\n- Ce qui a pesé : "${q1}"\n- Dans mon corps : "${q2}"\n- Intensité : ${intensity}/10`
-    : `Tonight (zone: ${zone}):\n- What weighed: "${q1}"\n- In my body: "${q2}"\n- Intensity: ${intensity}/10`;
+  const userMsg = lang==='fr'
+    ? `Zone ${zone} :\n- Ce qui a pesé : "${q1}"\n- Corps : "${q2}"\n- Intensité : ${intensity}/10`
+    : `Zone ${zone}:\n- Weighed: "${q1}"\n- Body: "${q2}"\n- Intensity: ${intensity}/10`;
 
-  const result = await callAI(sys, msg);
-  if (result.error) resp.innerHTML = `<div class="ai-response" style="color:#f0997b">${result.error}</div>`;
-  else {
-    resp.innerHTML = `<div class="ai-response">${result.text.replace(/\n/g,'<br>')}</div>`;
-    saveEntry(zone, q1, intensity);
-  }
+  const text = await callClaude(key, sys, userMsg);
+  resp.innerHTML = `<div class="ai-response">${text.replace(/\n/g,'<br>')}</div>`;
+  document.getElementById('reset-btn').classList.remove('hidden');
+  saveSession({date: new Date().toISOString(), zone, q1, intensity});
 }
 
+// ── Crisis ────────────────────────────────────────────────────
 async function submitCrisis() {
+  const key = getApiKey();
+  if (!key) { showNoKeyMsg('crisis-resp'); return; }
   const input = document.getElementById('crisis-input').value.trim();
   if (!input) return;
-  const resp = document.getElementById('crisis-response');
+  const resp = document.getElementById('crisis-resp');
   resp.classList.remove('hidden');
   resp.innerHTML = loading();
 
-  const isFr = lang === 'fr';
   const zoneLabel = zone === 'terrain'
-    ? (isFr ? 'PTSD terrain' : 'Field PTSD')
-    : (isFr ? 'trauma relationnel' : 'relational trauma');
+    ? (lang==='fr' ? 'PTSD terrain' : 'Field PTSD')
+    : (lang==='fr' ? 'trauma relationnel' : 'relational trauma');
 
-  const sys = isFr
-    ? `Tu es un psychologue spécialisé en trauma. Un reporter en moment de crise te contacte. Zone : ${zoneLabel}. Profil : hyperactif mental, sport extrême comme seul "off", méditation passive inefficace. Donne IMMÉDIATEMENT 1 exercice physique/focal concret pour sortir de la crise. Mobilise le focus total. Pas de respirations guidées molles. Directement l'exercice, nommé, en 4-6 étapes courtes et percutantes. Rien d'autre.`
-    : `You are a trauma psychologist. A reporter in crisis is reaching out. Zone: ${zoneLabel}. Profile: hyperactive mind, extreme sports as only "off", passive meditation doesn't work. Give IMMEDIATELY 1 concrete physical/focus exercise to break the crisis. Mobilize total focus. No soft guided breathing. Directly the exercise, named, in 4-6 short, punchy steps. Nothing else.`;
+  const sys = lang==='fr'
+    ? `Tu es un psychologue spécialisé en trauma. Zone : ${zoneLabel}. Profil : hyperactif mental, sport extrême comme seul "off", méditation passive inefficace. Donne IMMÉDIATEMENT et UNIQUEMENT un exercice physique/focal concret pour sortir du moment de crise. Mobilise le focus total. Pas de respirations molles. Directement l'exercice, nommé, en 4-6 étapes courtes.`
+    : `You are a trauma psychologist. Zone: ${zoneLabel}. Profile: hyperactive mind, extreme sports as only "off", passive meditation useless. Give IMMEDIATELY and ONLY a concrete physical/focus exercise to break the crisis. Mobilize total focus. No soft breathing. Directly the exercise, named, 4-6 short steps.`;
 
-  const result = await callAI(sys, input);
-  if (result.error) resp.innerHTML = `<div class="ai-response" style="color:#f0997b">${result.error}</div>`;
-  else resp.innerHTML = `<div class="exercise-card"><div class="exercise-title">${T[lang].exerciseLabel}</div><div style="font-size:14px;line-height:1.7">${result.text.replace(/\n/g,'<br>')}</div></div>`;
+  const text = await callClaude(key, sys, input);
+  resp.innerHTML = `<div class="exercise-card"><div class="exercise-title">${lang==='fr'?'Exercice immédiat':'Immediate exercise'}</div><div class="exercise-body">${text.replace(/\n/g,'<br>')}</div></div>`;
 }
 
+// ── Patterns insight ──────────────────────────────────────────
 async function getInsight() {
-  const resp = document.getElementById('insight-response');
+  const key = getApiKey();
+  if (!key) { showNoKeyMsg('insight-resp'); return; }
   const btn = document.getElementById('insight-btn');
   btn.disabled = true;
+  const resp = document.getElementById('insight-resp');
   resp.innerHTML = loading();
 
-  const isFr = lang === 'fr';
-  const sys = isFr
-    ? `Tu es un psychologue spécialisé en trauma. Génère une analyse courte et directe des patterns les plus probables à surveiller cette semaine chez un reporter avec PTSD terrain et trauma relationnel (trahisons, méfiance). 3-4 observations concrètes, pas de généralités. Direct et percutant.`
-    : `You are a trauma psychologist. Generate a short, direct analysis of the most likely patterns to watch this week for a reporter with field PTSD and relational trauma (betrayals, trust issues). 3-4 concrete observations, no generalities. Direct and punchy.`;
+  const sys = lang==='fr'
+    ? `Tu es un psychologue spécialisé en trauma. En te basant sur les patterns typiques d'un reporter avec PTSD terrain (Guyane) et trauma relationnel (trahisons, méfiance), génère une analyse courte et percutante des schémas les plus probables à surveiller. Sois direct. 3-4 observations concrètes, 1-2 lignes chacune.`
+    : `You are a trauma psychologist. Based on typical patterns of a reporter with field PTSD (French Guiana) and relational trauma (betrayals, distrust), generate a short, punchy analysis of the most likely patterns to watch. Be direct. 3-4 concrete observations, 1-2 lines each.`;
 
-  const result = await callAI(sys, isFr ? 'Analyse mes patterns cette semaine.' : 'Analyze my patterns this week.');
-  if (result.error) resp.innerHTML = `<div class="ai-response" style="color:#f0997b">${result.error}</div>`;
-  else resp.innerHTML = `<div class="ai-response" style="margin-top:12px">${result.text.replace(/\n/g,'<br>')}</div>`;
+  const text = await callClaude(key, sys, lang==='fr'?'Analyse mes patterns.':'Analyze my patterns.');
+  resp.innerHTML = `<div class="ai-response" style="margin-top:12px">${text.replace(/\n/g,'<br>')}</div>`;
   btn.disabled = false;
 }
 
-// ── Storage & Streak ───────────────────────────────────────────
-function saveEntry(z, text, intensity) {
-  const today = new Date().toISOString().slice(0,10);
-  const entries = JSON.parse(localStorage.getItem('signal_entries') || '[]');
-  entries.push({ date: today, zone: z, text: text.slice(0,80), intensity });
-  localStorage.setItem('signal_entries', JSON.stringify(entries.slice(-90)));
-}
-function renderStreak() {
-  const entries = JSON.parse(localStorage.getItem('signal_entries') || '[]');
-  const days = T[lang].days;
-  const row = document.getElementById('streak-row');
-  if (!row) return;
-  row.innerHTML = '';
-  for (let i = 6; i >= 0; i--) {
-    const d = new Date(); d.setDate(d.getDate() - i);
-    const ds = d.toISOString().slice(0,10);
-    const entry = entries.find(e => e.date === ds);
-    const dayLabel = days[(d.getDay() + 6) % 7];
-    const el = document.createElement('div');
-    el.className = 'streak-day' + (entry ? ` done ${entry.zone}` : '');
-    el.innerHTML = `<span class="sd-label">${dayLabel}</span><span>${entry ? (entry.intensity||'·') : '·'}</span>`;
-    row.appendChild(el);
+// ── API Call ─────────────────────────────────────────────────
+async function callClaude(key, system, userContent) {
+  try {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        systemInstruction: { parts: [{ text: system }] },
+        contents: [{ role: 'user', parts: [{ text: userContent }] }],
+        generationConfig: { maxOutputTokens: 1000, temperature: 0.7 }
+      })
+    });
+    const data = await res.json();
+    if (data.error) return `Erreur : ${data.error.message}`;
+    return data.candidates?.[0]?.content?.parts?.[0]?.text || 'Réponse vide.';
+  } catch(e) {
+    return lang==='fr' ? 'Erreur de connexion. Vérifie ta clé API et ta connexion.' : 'Connection error. Check your API key and connection.';
   }
 }
 
-// ── Init ───────────────────────────────────────────────────────
-checkApiKey();
-setZone('terrain');
+// ── API Key management ────────────────────────────────────────
+function getApiKey() { return localStorage.getItem('signal-gemini-key') || ''; }
+
+function saveApiKey() {
+  const val = document.getElementById('api-key-input').value.trim();
+  if (!val) return;
+  localStorage.setItem('signal-gemini-key', val);
+  updateApiStatus('ok');
+}
+
+async function testApiKey() {
+  const key = document.getElementById('api-key-input').value.trim() || getApiKey();
+  if (!key) { updateApiStatus('none'); return; }
+  updateApiStatus('testing');
+  try {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: 'hi' }] }], generationConfig: { maxOutputTokens: 5 } })
+    });
+    const d = await res.json();
+    updateApiStatus(d.error ? 'err' : 'ok');
+    if (!d.error) localStorage.setItem('signal-gemini-key', key);
+  } catch(e) { updateApiStatus('err'); }
+}
+
+function updateApiStatus(state) {
+  const t = T[lang];
+  const el = document.getElementById('api-status');
+  if (!el) return;
+  const key = getApiKey();
+  if (!state) state = key ? 'ok' : 'none';
+  const map = { ok:[t.api_status_ok,'ok'], err:[t.api_status_err,'err'], none:[t.api_status_none,'none'], testing:[t.api_status_testing,'none'] };
+  const [txt, cls] = map[state]||map.none;
+  el.textContent = txt;
+  el.className = 'api-status ' + cls;
+}
+
+// ── Settings overlay ──────────────────────────────────────────
+function openSettings() {
+  document.getElementById('settings-overlay').classList.remove('hidden');
+  const key = getApiKey();
+  if (key) document.getElementById('api-key-input').value = key;
+  updateApiStatus();
+}
+function closeSettings() { document.getElementById('settings-overlay').classList.add('hidden'); }
+function handleOverlayClick(e) { if (e.target.id==='settings-overlay') closeSettings(); }
+
+// ── Notifications ─────────────────────────────────────────────
+function toggleNotif(on) {
+  if (on && 'Notification' in window) {
+    Notification.requestPermission().then(p => {
+      if (p !== 'granted') document.getElementById('notif-toggle').checked = false;
+      else localStorage.setItem('signal-notif', '1');
+    });
+  } else {
+    localStorage.removeItem('signal-notif');
+  }
+}
+function saveNotifTime(t) { localStorage.setItem('signal-notif-time', t); }
+
+// ── Streak / History ──────────────────────────────────────────
+function saveSession(data) {
+  const key = 'signal-sessions';
+  const sessions = JSON.parse(localStorage.getItem(key)||'[]');
+  sessions.push(data);
+  if (sessions.length > 200) sessions.shift();
+  localStorage.setItem(key, JSON.stringify(sessions));
+}
+
+function buildStreak() {
+  const days = T[lang].days;
+  const sessions = JSON.parse(localStorage.getItem('signal-sessions')||'[]');
+  const now = new Date();
+  const row = document.getElementById('streak-row');
+  row.innerHTML = '';
+  for (let i=6; i>=0; i--) {
+    const d = new Date(now); d.setDate(d.getDate()-i);
+    const ds = d.toISOString().slice(0,10);
+    const s = sessions.find(s => s.date && s.date.startsWith(ds));
+    const div = document.createElement('div');
+    div.className = 'sday' + (s ? ' done ' + (s.zone||'terrain') : '');
+    div.textContent = days[6-i] || '?';
+    row.appendChild(div);
+  }
+}
+
+// ── Clear data ────────────────────────────────────────────────
+function clearAllData() {
+  const msg = lang==='fr' ? 'Effacer toutes tes données Signal ?' : 'Clear all Signal data?';
+  if (!confirm(msg)) return;
+  ['signal-sessions','signal-gemini-key','signal-lang','signal-zone','signal-notif','signal-notif-time'].forEach(k => localStorage.removeItem(k));
+  closeSettings();
+  location.reload();
+}
+
+// ── Helpers ───────────────────────────────────────────────────
+function loading() { return '<div class="loading"><div class="dot-a"></div><div class="dot-a"></div><div class="dot-a"></div></div>'; }
+function showNoKeyMsg(targetId) {
+  const resp = document.getElementById(targetId);
+  resp.classList.remove('hidden');
+  const msg = lang==='fr'
+    ? '<div class="ai-response" style="color:#F0997B">Aucune clé API configurée. Appuie sur ⚙ pour en ajouter une.</div>'
+    : '<div class="ai-response" style="color:#F0997B">No API key configured. Tap ⚙ to add one.</div>';
+  resp.innerHTML = msg;
+}
+
+// ── Init ──────────────────────────────────────────────────────
+document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent === lang.toUpperCase()));
+setZone(zone);
+setMode('soir');
 applyTranslations();
 
-// ── Service Worker ─────────────────────────────────────────────
+// Service Worker registration
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./sw.js').then(reg => {
-    reg.addEventListener('updatefound', () => {
-      const newWorker = reg.installing;
-      newWorker.addEventListener('statechange', () => {
-        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-          console.log('[Signal] Nouvelle version disponible — rechargement.');
-          window.location.reload();
-        }
-      });
-    });
-  });
+    console.log('[Signal] SW registered:', reg.scope);
+  }).catch(err => console.warn('[Signal] SW failed:', err));
 }
 </script>
 </body>
