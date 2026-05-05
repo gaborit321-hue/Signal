@@ -4,7 +4,7 @@
 //     pour forcer la purge du cache sur tous les appareils
 // ============================================================
 
-const CACHE_VERSION = 'v1.4'; // <-- CHANGE ICI à chaque push
+const CACHE_VERSION = 'v1.5'; // <-- CHANGE ICI à chaque push
 
 // ============================================================
 const CACHE_NAME = `signal-${CACHE_VERSION}`;
