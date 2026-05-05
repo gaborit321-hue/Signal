@@ -1,9 +1,12 @@
 // ============================================================
 //  Service Worker — Signal PWA
-//  👉 CACHE_VERSION est injecté automatiquement par GitHub Actions
-//     à chaque push (date+heure du build) pour purger le cache
+//  👉 Change CACHE_VERSION manuellement à chaque mise à jour
+//     pour forcer la purge du cache sur tous les appareils
 // ============================================================
-const CACHE_VERSION = '__CACHE_VERSION__';
+
+const CACHE_VERSION = 'v1.1'; // <-- CHANGE ICI à chaque push
+
+// ============================================================
 const CACHE_NAME = `signal-${CACHE_VERSION}`;
 
 const ASSETS = [
@@ -42,8 +45,7 @@ self.addEventListener('activate', event => {
 // ── Fetch : Network-first API, Cache-first assets ────────────
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
-  // Appels Anthropic jamais mis en cache
-  if (event.request.url.includes('api.anthropic.com')) return;
+  if (event.request.url.includes('generativelanguage.googleapis.com')) return;
 
   event.respondWith(
     caches.match(event.request).then(cached => {
