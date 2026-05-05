@@ -13,8 +13,7 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
-  --red:#D85A30;--red-light:#FAECE7;--red-mid:#F0997B;--red-dark:#993C1D;
-  --blue:#378ADD;--blue-light:#E6F1FB;--blue-mid:#85B7EB;--blue-dark:#185FA5;
+  --acc:#378ADD;--acc-light:rgba(55,138,221,.12);--acc-mid:#85B7EB;
   --bg:#12121c;--bg2:#1a1a28;--bg3:#22223a;
   --text:#e8e6f0;--muted:#8a88a0;--border:#2e2c44;
   --r:14px;--rm:10px;--rs:7px;
@@ -25,81 +24,44 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .app{display:flex;flex-direction:column;height:100%;max-width:480px;margin:0 auto;padding:calc(var(--safe-top) + 12px) 16px calc(var(--safe-bottom) + 80px)}
 .scroll-area{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-bottom:8px}
 .scroll-area::-webkit-scrollbar{display:none}
-
-/* Header */
-.top-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
-.app-name{font-size:22px;font-weight:600;letter-spacing:-0.5px}
-.app-name span.t{color:var(--red)}
-.app-name span.l{color:var(--blue)}
+.top-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.app-name{font-size:22px;font-weight:600;letter-spacing:-0.5px;color:var(--text)}
+.app-sub{font-size:11px;color:var(--muted);margin-top:2px}
 .top-right{display:flex;gap:8px;align-items:center}
 .lang-btn{font-size:11px;padding:4px 9px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .15s}
 .lang-btn.active{background:var(--text);color:var(--bg);border-color:var(--text)}
 .icon-btn{width:34px;height:34px;border-radius:50%;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .15s}
 .icon-btn:hover{background:var(--bg3);color:var(--text)}
-
-/* Zone tabs */
-.zone-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
-.zone-tab{padding:11px 12px;border-radius:var(--rm);border:1.5px solid var(--border);background:var(--bg2);cursor:pointer;transition:all .2s;text-align:center}
-.zone-tab .dot{width:7px;height:7px;border-radius:50%;margin:0 auto 5px;background:var(--border);transition:background .2s}
-.zone-tab .zl{font-size:13px;font-weight:600}
-.zone-tab .zs{font-size:10px;color:var(--muted);margin-top:2px}
-.zone-tab.active.terrain{border-color:var(--red);background:rgba(216,90,48,.12)}
-.zone-tab.active.terrain .dot{background:var(--red)}
-.zone-tab.active.liens{border-color:var(--blue);background:rgba(55,138,221,.12)}
-.zone-tab.active.liens .dot{background:var(--blue)}
-
-/* Mode tabs */
-.mode-tabs{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;padding-bottom:2px}
-.mode-tabs::-webkit-scrollbar{display:none}
-.mode-tab{white-space:nowrap;font-size:12px;padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .15s;flex-shrink:0}
+.mode-tabs{display:flex;gap:6px;margin-bottom:14px}
+.mode-tab{white-space:nowrap;font-size:12px;padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .15s}
 .mode-tab.active{color:var(--text);border-color:var(--text);background:var(--bg3);font-weight:600}
-
-/* Cards */
 .card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:10px}
-.card.terrain-accent{border-left:3px solid var(--red)}
-.card.liens-accent{border-left:3px solid var(--blue)}
+.card.accent{border-left:3px solid var(--acc)}
 .q-label{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:7px}
 .q-text{font-size:15px;color:var(--text);margin-bottom:12px;line-height:1.5}
-textarea{width:100%;min-height:70px;font-size:14px;font-family:inherit;resize:none;padding:10px 12px;border-radius:var(--rs);border:1px solid var(--border);background:var(--bg3);color:var(--text);transition:border .15s;line-height:1.5}
+textarea{width:100%;font-size:14px;font-family:inherit;resize:none;padding:10px 12px;border-radius:var(--rs);border:1px solid var(--border);background:var(--bg3);color:var(--text);transition:border .15s;line-height:1.5}
 textarea:focus{outline:none;border-color:var(--muted)}
-input[type=range]{width:100%;accent-color:var(--red)}
-.zone-tab.active.liens ~ * input[type=range]{accent-color:var(--blue)}
-
+input[type=range]{width:100%;accent-color:var(--acc)}
 .btn{display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:10px 18px;border-radius:20px;border:1px solid var(--border);background:var(--text);color:var(--bg);font-size:13px;font-weight:600;cursor:pointer;transition:opacity .15s}
 .btn:hover{opacity:.85}
 .btn:disabled{opacity:.35;cursor:not-allowed}
 .btn.secondary{background:transparent;color:var(--text);border-color:var(--border)}
 .btn.danger{background:#E24B4A;color:#fff;border-color:#E24B4A}
-
-.crisis-trigger{width:100%;padding:16px;border-radius:var(--r);border:1.5px solid var(--red);background:rgba(216,90,48,.1);color:var(--red);font-size:15px;font-weight:600;cursor:pointer;transition:all .2s}
-.crisis-trigger:hover{background:var(--red);color:#fff}
-.crisis-trigger.liens{border-color:var(--blue);background:rgba(55,138,221,.1);color:var(--blue)}
-.crisis-trigger.liens:hover{background:var(--blue);color:#fff}
-
 .ai-response{background:var(--bg3);border-radius:var(--rs);padding:12px 14px;font-size:14px;line-height:1.7;color:var(--text);border:1px solid var(--border);margin-top:10px;white-space:pre-wrap}
 .exercise-card{background:var(--bg3);border-radius:var(--rs);padding:12px 14px;border:1px solid var(--border);margin-top:10px}
 .exercise-title{font-size:10px;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
 .exercise-body{font-size:14px;line-height:1.6}
-
 .loading{display:flex;gap:5px;align-items:center;padding:12px 0}
 .dot-a{width:6px;height:6px;border-radius:50%;background:var(--muted);animation:pulse 1.2s ease-in-out infinite}
 .dot-a:nth-child(2){animation-delay:.2s}
 .dot-a:nth-child(3){animation-delay:.4s}
 @keyframes pulse{0%,80%,100%{opacity:.3;transform:scale(.8)}40%{opacity:1;transform:scale(1)}}
-
-/* Patterns */
-.ptag{display:inline-block;font-size:11px;padding:3px 10px;border-radius:12px;background:var(--bg3);border:1px solid var(--border);color:var(--muted);margin:3px}
-.ptag.terrain{background:rgba(216,90,48,.15);color:var(--red-mid);border-color:rgba(216,90,48,.3)}
-.ptag.liens{background:rgba(55,138,221,.15);color:var(--blue-mid);border-color:rgba(55,138,221,.3)}
-
+.ptag{display:inline-block;font-size:11px;padding:3px 10px;border-radius:12px;background:rgba(55,138,221,.15);color:var(--acc-mid);border:1px solid rgba(55,138,221,.3);margin:3px}
 .streak{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
 .sday{width:26px;height:26px;border-radius:5px;font-size:10px;display:flex;align-items:center;justify-content:center;color:var(--muted);background:var(--bg3);border:1px solid var(--border)}
-.sday.done.terrain{background:rgba(216,90,48,.2);color:var(--red-mid);border-color:rgba(216,90,48,.4)}
-.sday.done.liens{background:rgba(55,138,221,.2);color:var(--blue-mid);border-color:rgba(55,138,221,.4)}
-
-/* Settings overlay */
+.sday.done{background:rgba(55,138,221,.2);color:var(--acc-mid);border-color:rgba(55,138,221,.4)}
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;display:flex;align-items:flex-end;justify-content:center;padding:0 0 var(--safe-bottom)}
-.sheet{background:var(--bg2);border-radius:var(--r) var(--r) 0 0;width:100%;max-width:480px;padding:20px 20px calc(20px + var(--safe-bottom));max-height:85vh;overflow-y:auto}
+.sheet{background:var(--bg2);border-radius:var(--r) var(--r) 0 0;width:100%;max-width:480px;padding:20px 20px calc(20px + var(--safe-bottom));max-height:88vh;overflow-y:auto}
 .sheet-handle{width:36px;height:4px;border-radius:2px;background:var(--border);margin:0 auto 18px}
 .sheet h2{font-size:17px;font-weight:600;margin-bottom:16px}
 .field-label{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
@@ -109,14 +71,12 @@ input[type=text]:focus,input[type=password]:focus{outline:none;border-color:var(
 .api-status.ok{background:rgba(29,158,117,.15);color:#5DCAA5;border:1px solid rgba(29,158,117,.3)}
 .api-status.err{background:rgba(226,75,74,.15);color:#F09595;border:1px solid rgba(226,75,74,.3)}
 .api-status.none{background:var(--bg3);color:var(--muted);border:1px solid var(--border)}
-
-/* Bottom nav */
+.context-note{font-size:11px;color:var(--muted);margin-top:8px;line-height:1.6;font-style:italic}
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--border);display:flex;justify-content:center;padding:0 0 var(--safe-bottom)}
 .bnav-inner{display:flex;width:100%;max-width:480px}
 .bnav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 6px;cursor:pointer;border:none;background:transparent;color:var(--muted);font-size:10px;transition:color .15s}
-.bnav-btn.active{color:var(--text)}
+.bnav-btn.active{color:var(--acc)}
 .bnav-icon{font-size:20px;line-height:1}
-
 .hidden{display:none!important}
 .divider{height:1px;background:var(--border);margin:14px 0}
 </style>
@@ -125,7 +85,10 @@ input[type=text]:focus,input[type=password]:focus{outline:none;border-color:var(
 
 <div class="app">
   <div class="top-bar">
-    <div class="app-name">S<span class="t">i</span><span class="l">g</span>nal</div>
+    <div>
+      <div class="app-name">Signal</div>
+      <div class="app-sub" id="app-sub">Trauma relationnel</div>
+    </div>
     <div class="top-right">
       <button class="lang-btn active" onclick="setLang('fr')">FR</button>
       <button class="lang-btn" onclick="setLang('en')">EN</button>
@@ -134,137 +97,123 @@ input[type=text]:focus,input[type=password]:focus{outline:none;border-color:var(
   </div>
 
   <div class="scroll-area">
-
-    <!-- Zone tabs -->
-    <div class="zone-tabs">
-      <div class="zone-tab active terrain" id="zt-terrain" onclick="setZone('terrain')">
-        <div class="dot"></div>
-        <div class="zl" id="zt-terrain-label">Terrain</div>
-        <div class="zs" id="zt-terrain-sub">PTSD professionnel</div>
-      </div>
-      <div class="zone-tab inactive liens" id="zt-liens" onclick="setZone('liens')">
-        <div class="dot"></div>
-        <div class="zl" id="zt-liens-label">Liens</div>
-        <div class="zs" id="zt-liens-sub">Trauma relationnel</div>
-      </div>
-    </div>
-
-    <!-- Mode tabs -->
     <div class="mode-tabs">
-      <button class="mode-tab active" id="mt-soir" onclick="setMode('soir')" data-fr="Débrief soir" data-en="Evening debrief">Débrief soir</button>
-      <button class="mode-tab" id="mt-crise" onclick="setMode('crise')" data-fr="Mode crise" data-en="Crisis mode">Mode crise</button>
-      <button class="mode-tab" id="mt-patterns" onclick="setMode('patterns')" data-fr="Patterns" data-en="Patterns">Patterns</button>
+      <button class="mode-tab active" id="mt-soir" onclick="setMode('soir')">Débrief soir</button>
+      <button class="mode-tab" id="mt-crise" onclick="setMode('crise')">Mode crise</button>
+      <button class="mode-tab" id="mt-patterns" onclick="setMode('patterns')">Patterns</button>
     </div>
 
-    <!-- VIEW: DEBRIEF SOIR -->
+    <!-- DEBRIEF SOIR -->
     <div id="view-soir">
-      <div class="card terrain-accent" id="q1-card">
+      <div class="card accent" id="q1-card">
         <div class="q-label" id="q1-label">Question 1 / 3</div>
-        <div class="q-text" id="q1-text">En une phrase — qu'est-ce qui a pesé le plus aujourd'hui ?</div>
-        <textarea id="q1-input" placeholder="..."></textarea>
-        <button class="btn" onclick="nextQ(1)" id="q1-btn">Suivant →</button>
+        <div class="q-text" id="q1-text">Ce soir — qu'est-ce qui a été le plus difficile dans tes interactions aujourd'hui ?</div>
+        <textarea id="q1-input" placeholder="..." style="min-height:70px"></textarea>
+        <button class="btn" onclick="nextQ(1)">Suivant →</button>
       </div>
-      <div class="card terrain-accent hidden" id="q2-card">
+      <div class="card accent hidden" id="q2-card">
         <div class="q-label" id="q2-label">Question 2 / 3</div>
         <div class="q-text" id="q2-text">Dans ton corps en ce moment — où ça tire, où ça bloque ?</div>
-        <textarea id="q2-input" placeholder="..."></textarea>
-        <button class="btn" onclick="nextQ(2)" id="q2-btn">Suivant →</button>
+        <textarea id="q2-input" placeholder="..." style="min-height:70px"></textarea>
+        <button class="btn" onclick="nextQ(2)">Suivant →</button>
       </div>
-      <div class="card terrain-accent hidden" id="q3-card">
+      <div class="card accent hidden" id="q3-card">
         <div class="q-label" id="q3-label">Question 3 / 3</div>
         <div class="q-text" id="q3-text">Sur 10 — ton niveau d'intensité aujourd'hui ?</div>
         <div style="display:flex;align-items:center;gap:12px;margin:10px 0 14px">
           <input type="range" min="1" max="10" value="5" id="intensity-slider" oninput="document.getElementById('ival').textContent=this.value" style="flex:1">
-          <span id="ival" style="font-size:22px;font-weight:700;min-width:28px;color:var(--text)">5</span>
+          <span id="ival" style="font-size:22px;font-weight:700;min-width:28px">5</span>
         </div>
-        <button class="btn" onclick="submitDebrief()" id="q3-btn" data-fr="Analyser →" data-en="Analyze →">Analyser →</button>
+        <button class="btn" onclick="submitDebrief()" id="q3-btn">Analyser →</button>
       </div>
       <div id="debrief-resp" class="hidden"></div>
-      <button class="btn secondary hidden" id="reset-btn" onclick="resetDebrief()" style="margin-top:4px" data-fr="Nouvelle session" data-en="New session">Nouvelle session</button>
+      <button class="btn secondary hidden" id="reset-btn" onclick="resetDebrief()" style="margin-top:4px">Nouvelle session</button>
     </div>
 
-    <!-- VIEW: CRISE -->
+    <!-- CRISE -->
     <div id="view-crise" class="hidden">
-      <div class="card terrain-accent" id="crisis-card">
+      <div class="card accent">
         <div class="q-text" id="crisis-prompt">Dis-moi en une phrase ce qui se passe là, maintenant.</div>
         <textarea id="crisis-input" placeholder="..." style="min-height:60px;margin-top:10px"></textarea>
-        <button class="btn" onclick="submitCrisis()" id="crisis-btn" data-fr="Exercice immédiat →" data-en="Immediate exercise →">Exercice immédiat →</button>
+        <button class="btn" onclick="submitCrisis()" id="crisis-btn">Exercice immédiat →</button>
       </div>
       <div id="crisis-resp" class="hidden"></div>
     </div>
 
-    <!-- VIEW: PATTERNS -->
+    <!-- PATTERNS -->
     <div id="view-patterns" class="hidden">
       <div class="card">
-        <div class="q-label" id="p-label" data-fr="Patterns détectés" data-en="Detected patterns">Patterns détectés</div>
+        <div class="q-label" id="p-label">Patterns détectés</div>
         <p style="font-size:13px;color:var(--muted);margin-bottom:12px" id="p-intro">Après quelques sessions, Signal reflète tes schémas récurrents.</p>
-        <div style="margin-bottom:10px">
-          <div style="font-size:11px;color:var(--muted);margin-bottom:5px" id="p-terrain-label" data-fr="Zone Terrain" data-en="Field zone">Zone Terrain</div>
-          <span class="ptag terrain" data-fr="hypervigilance" data-en="hypervigilance">hypervigilance</span>
-          <span class="ptag terrain" data-fr="contrôle" data-en="control">contrôle</span>
-          <span class="ptag terrain" data-fr="dissociation légère" data-en="mild dissociation">dissociation légère</span>
-        </div>
-        <div>
-          <div style="font-size:11px;color:var(--muted);margin-bottom:5px" id="p-liens-label" data-fr="Zone Liens" data-en="Bonds zone">Zone Liens</div>
-          <span class="ptag liens" data-fr="méfiance préemptive" data-en="preemptive distrust">méfiance préemptive</span>
-          <span class="ptag liens" data-fr="test de loyauté" data-en="loyalty testing">test de loyauté</span>
-        </div>
+        <span class="ptag" data-fr="méfiance préemptive" data-en="preemptive distrust">méfiance préemptive</span>
+        <span class="ptag" data-fr="test de loyauté" data-en="loyalty testing">test de loyauté</span>
+        <span class="ptag" data-fr="hypervigilance relationnelle" data-en="relational hypervigilance">hypervigilance relationnelle</span>
+        <span class="ptag" data-fr="retrait préventif" data-en="preventive withdrawal">retrait préventif</span>
       </div>
       <div class="card">
-        <div class="q-label" id="streak-label" data-fr="Régularité — 7 derniers jours" data-en="Consistency — last 7 days">Régularité — 7 derniers jours</div>
+        <div class="q-label" id="streak-label">Régularité — 7 derniers jours</div>
         <div class="streak" id="streak-row"></div>
       </div>
       <div class="card">
-        <div class="q-label" id="insight-label" data-fr="Analyse IA" data-en="AI analysis">Analyse IA</div>
-        <button class="btn" onclick="getInsight()" id="insight-btn" data-fr="Générer →" data-en="Generate →">Générer →</button>
+        <div class="q-label" id="insight-label">Analyse IA</div>
+        <button class="btn" onclick="getInsight()" id="insight-btn">Générer →</button>
         <div id="insight-resp"></div>
       </div>
     </div>
 
-  </div><!-- end scroll-area -->
-</div><!-- end app -->
+  </div>
+</div>
 
 <!-- Bottom nav -->
 <div class="bottom-nav">
   <div class="bnav-inner">
     <button class="bnav-btn active" id="bnav-soir" onclick="setMode('soir')">
       <span class="bnav-icon">◐</span>
-      <span id="bn-soir" data-fr="Soir" data-en="Evening">Soir</span>
+      <span id="bn-soir">Soir</span>
     </button>
     <button class="bnav-btn" id="bnav-crise" onclick="setMode('crise')">
       <span class="bnav-icon">⚡</span>
-      <span id="bn-crise" data-fr="Crise" data-en="Crisis">Crise</span>
+      <span id="bn-crise">Crise</span>
     </button>
     <button class="bnav-btn" id="bnav-patterns" onclick="setMode('patterns')">
       <span class="bnav-icon">≋</span>
-      <span id="bn-patterns" data-fr="Patterns" data-en="Patterns">Patterns</span>
+      <span id="bn-patterns">Patterns</span>
     </button>
   </div>
 </div>
 
 <!-- Settings Sheet -->
 <div class="overlay hidden" id="settings-overlay" onclick="handleOverlayClick(event)">
-  <div class="sheet" id="settings-sheet">
+  <div class="sheet">
     <div class="sheet-handle"></div>
     <h2 id="s-title">Paramètres</h2>
 
+    <!-- API Key -->
     <div class="field-label" id="s-api-label">Clé API Google Gemini</div>
-    <input type="password" id="api-key-input" placeholder="AIza..." autocomplete="off" autocorrect="off" spellcheck="false">
+    <input type="password" id="api-key-input" placeholder="AIza..." autocomplete="off" spellcheck="false">
     <div id="api-status" class="api-status none">Aucune clé configurée</div>
     <div style="display:flex;gap:8px;margin-top:10px">
       <button class="btn" onclick="saveApiKey()" id="s-save-btn">Enregistrer</button>
       <button class="btn secondary" onclick="testApiKey()" id="s-test-btn">Tester</button>
     </div>
-    <p style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.6" id="s-api-note">
-      Ta clé est stockée uniquement dans ce navigateur (localStorage). Elle n'est jamais envoyée ailleurs qu'à generativelanguage.googleapis.com.
-    </p>
+    <p class="context-note" id="s-api-note">Stockée uniquement dans ce navigateur. Jamais envoyée ailleurs qu'à generativelanguage.googleapis.com.</p>
 
     <div class="divider"></div>
 
+    <!-- Contexte personnel -->
+    <div class="field-label" id="s-ctx-label">Mon contexte</div>
+    <p class="context-note" style="margin-bottom:8px" id="s-ctx-note">Ce texte est injecté dans chaque prompt. Décris ton historique, tes patterns, ce que tu veux que l'IA sache sur toi.</p>
+    <textarea id="ctx-input" placeholder="Ex : J'ai vécu deux trahisons importantes — tromperie et manipulation. L'une utilisait la danse comme couverture. Je fais confiance lentement et je teste souvent les gens sans le dire. Mon cerveau tourne en permanence, la méditation ne fonctionne pas pour moi..." style="min-height:130px;font-size:13px"></textarea>
+    <button class="btn" onclick="saveContext()" id="s-ctx-save-btn" style="margin-top:8px">Enregistrer le contexte</button>
+    <div id="ctx-status" class="hidden" style="font-size:12px;color:#5DCAA5;margin-top:6px">✓ Contexte enregistré</div>
+
+    <div class="divider"></div>
+
+    <!-- Notif -->
     <div class="field-label" id="s-notif-label">Rappel quotidien</div>
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
       <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:14px">
-        <input type="checkbox" id="notif-toggle" onchange="toggleNotif(this.checked)" style="width:16px;height:16px;accent-color:var(--red)">
+        <input type="checkbox" id="notif-toggle" onchange="toggleNotif(this.checked)" style="width:16px;height:16px;accent-color:var(--acc)">
         <span id="s-notif-text">Notification le soir</span>
       </label>
     </div>
@@ -274,7 +223,7 @@ input[type=text]:focus,input[type=password]:focus{outline:none;border-color:var(
     <div class="divider"></div>
 
     <div class="field-label" id="s-data-label">Données</div>
-    <button class="btn danger" onclick="clearAllData()" id="s-clear-btn" style="font-size:12px">Effacer toutes les données</button>
+    <button class="btn danger" onclick="clearAllData()" style="font-size:12px" id="s-clear-btn">Effacer toutes les données</button>
 
     <div class="divider"></div>
     <button class="btn secondary" onclick="closeSettings()" style="width:100%;justify-content:center" id="s-close-btn">Fermer</button>
@@ -282,110 +231,115 @@ input[type=text]:focus,input[type=password]:focus{outline:none;border-color:var(
 </div>
 
 <script>
-// ── State ────────────────────────────────────────────────────
 let lang = localStorage.getItem('signal-lang') || 'fr';
-let zone = localStorage.getItem('signal-zone') || 'terrain';
 let mode = 'soir';
 
-// ── Translations ─────────────────────────────────────────────
 const T = {
   fr: {
-    zt_terrain:'Terrain', zt_terrain_sub:'PTSD professionnel',
-    zt_liens:'Liens', zt_liens_sub:'Trauma relationnel',
-    q1t:'En une phrase — qu\'est-ce qui a pesé le plus aujourd\'hui ?',
-    q1l:'Ce soir — qu\'est-ce qui a été le plus difficile dans tes interactions ?',
+    app_sub:'Trauma relationnel',
+    mt_soir:'Débrief soir', mt_crise:'Mode crise', mt_patterns:'Patterns',
+    bn_soir:'Soir', bn_crise:'Crise', bn_patterns:'Patterns',
+    q1:'Ce soir — qu\'est-ce qui a été le plus difficile dans tes interactions aujourd\'hui ?',
     q2:'Dans ton corps en ce moment — où ça tire, où ça bloque ?',
     q3:'Sur 10 — ton niveau d\'intensité aujourd\'hui ?',
+    q1l:'Question 1 / 3', q2l:'Question 2 / 3', q3l:'Question 3 / 3',
+    next:'Suivant →', analyze:'Analyser →', new_session:'Nouvelle session',
     crisis_prompt:'Dis-moi en une phrase ce qui se passe là, maintenant.',
+    crisis_btn:'Exercice immédiat →',
+    p_label:'Patterns détectés',
     p_intro:'Après quelques sessions, Signal reflète tes schémas récurrents.',
+    streak_label:'Régularité — 7 derniers jours',
+    insight_label:'Analyse IA', insight_btn:'Générer →',
     s_title:'Paramètres',
     s_api_label:'Clé API Google Gemini',
-    s_api_note:'Ta clé est stockée uniquement dans ce navigateur (localStorage). Elle n\'est jamais envoyée ailleurs qu\'à generativelanguage.googleapis.com.',
+    s_api_note:'Stockée uniquement dans ce navigateur. Jamais envoyée ailleurs qu\'à generativelanguage.googleapis.com.',
+    s_ctx_label:'Mon contexte',
+    s_ctx_note:'Ce texte est injecté dans chaque prompt. Décris ton historique, tes patterns, ce que tu veux que l\'IA sache sur toi.',
+    s_ctx_save:'Enregistrer le contexte',
+    ctx_saved:'✓ Contexte enregistré',
     s_notif_label:'Rappel quotidien',
     s_notif_text:'Notification le soir',
     s_data_label:'Données',
-    api_status_none:'Aucune clé configurée',
-    api_status_ok:'Clé valide ✓',
-    api_status_err:'Clé invalide ou erreur réseau',
-    api_status_testing:'Test en cours...',
+    s_clear:'Effacer toutes les données',
+    s_close:'Fermer', s_save:'Enregistrer', s_test:'Tester',
+    api_none:'Aucune clé configurée', api_ok:'Clé valide ✓',
+    api_err:'Clé invalide ou erreur réseau', api_testing:'Test en cours...',
+    no_key:'Aucune clé API. Appuie sur ⚙ pour en ajouter une.',
     days:['L','M','M','J','V','S','D'],
+    ctx_placeholder:'Ex : J\'ai vécu deux trahisons importantes — tromperie et manipulation. L\'une utilisait la danse comme couverture. Je fais confiance lentement et je teste souvent les gens sans le dire. Mon cerveau tourne en permanence, la méditation ne fonctionne pas pour moi...',
   },
   en: {
-    zt_terrain:'Field', zt_terrain_sub:'Professional PTSD',
-    zt_liens:'Bonds', zt_liens_sub:'Relational trauma',
-    q1t:'In one sentence — what weighed the most today?',
-    q1l:'Tonight — what was hardest in your interactions today?',
+    app_sub:'Relational trauma',
+    mt_soir:'Evening debrief', mt_crise:'Crisis mode', mt_patterns:'Patterns',
+    bn_soir:'Evening', bn_crise:'Crisis', bn_patterns:'Patterns',
+    q1:'Tonight — what was the hardest thing in your interactions today?',
     q2:'In your body right now — where does it pull, where does it block?',
     q3:'Out of 10 — your intensity level today?',
+    q1l:'Question 1 / 3', q2l:'Question 2 / 3', q3l:'Question 3 / 3',
+    next:'Next →', analyze:'Analyze →', new_session:'New session',
     crisis_prompt:'Tell me in one sentence what\'s happening right now.',
+    crisis_btn:'Immediate exercise →',
+    p_label:'Detected patterns',
     p_intro:'After a few sessions, Signal starts reflecting your recurring patterns.',
+    streak_label:'Consistency — last 7 days',
+    insight_label:'AI analysis', insight_btn:'Generate →',
     s_title:'Settings',
     s_api_label:'Google Gemini API Key',
-    s_api_note:'Your key is stored only in this browser (localStorage). It is never sent anywhere except generativelanguage.googleapis.com.',
+    s_api_note:'Stored only in this browser. Never sent anywhere except generativelanguage.googleapis.com.',
+    s_ctx_label:'My context',
+    s_ctx_note:'This text is injected in every prompt. Describe your history, your patterns, what you want the AI to know about you.',
+    s_ctx_save:'Save context',
+    ctx_saved:'✓ Context saved',
     s_notif_label:'Daily reminder',
     s_notif_text:'Evening notification',
     s_data_label:'Data',
-    api_status_none:'No key configured',
-    api_status_ok:'Key valid ✓',
-    api_status_err:'Invalid key or network error',
-    api_status_testing:'Testing...',
+    s_clear:'Clear all data',
+    s_close:'Close', s_save:'Save', s_test:'Test',
+    api_none:'No key configured', api_ok:'Key valid ✓',
+    api_err:'Invalid key or network error', api_testing:'Testing...',
+    no_key:'No API key. Tap ⚙ to add one.',
     days:['M','T','W','T','F','S','S'],
+    ctx_placeholder:'E.g.: I went through two major betrayals — cheating and manipulation. One used dance as a cover. I trust slowly and I often test people without saying so. My brain never stops, meditation doesn\'t work for me...',
   }
 };
 
-// ── Lang ─────────────────────────────────────────────────────
 function setLang(l) {
   lang = l;
   localStorage.setItem('signal-lang', l);
   document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent === l.toUpperCase()));
-  applyTranslations();
+  applyT();
 }
 
-function applyTranslations() {
+function applyT() {
   const t = T[lang];
-  document.getElementById('zt-terrain-label').textContent = t.zt_terrain;
-  document.getElementById('zt-terrain-sub').textContent = t.zt_terrain_sub;
-  document.getElementById('zt-liens-label').textContent = t.zt_liens;
-  document.getElementById('zt-liens-sub').textContent = t.zt_liens_sub;
-  document.getElementById('q1-text').textContent = zone === 'terrain' ? t.q1t : t.q1l;
-  document.getElementById('q2-text').textContent = t.q2;
-  document.getElementById('q3-text').textContent = t.q3;
-  document.getElementById('crisis-prompt').textContent = t.crisis_prompt;
-  document.getElementById('p-intro').textContent = t.p_intro;
-  document.getElementById('s-title').textContent = t.s_title;
-  document.getElementById('s-api-label').textContent = t.s_api_label;
-  document.getElementById('s-api-note').textContent = t.s_api_note;
-  document.getElementById('s-notif-label').textContent = t.s_notif_label;
-  document.getElementById('s-notif-text').textContent = t.s_notif_text;
-  document.getElementById('s-data-label').textContent = t.s_data_label;
-  // data-fr/data-en elements
+  const ids = {
+    'app-sub':'app_sub','mt-soir':'mt_soir','mt-crise':'mt_crise','mt-patterns':'mt_patterns',
+    'bn-soir':'bn_soir','bn-crise':'bn_crise','bn-patterns':'bn_patterns',
+    'q1-text':'q1','q2-text':'q2','q3-text':'q3',
+    'q1-label':'q1l','q2-label':'q2l','q3-label':'q3l',
+    'reset-btn':'new_session','q3-btn':'analyze',
+    'crisis-prompt':'crisis_prompt','crisis-btn':'crisis_btn',
+    'p-label':'p_label','p-intro':'p_intro',
+    'streak-label':'streak_label','insight-label':'insight_label','insight-btn':'insight_btn',
+    's-title':'s_title','s-api-label':'s_api_label','s-api-note':'s_api_note',
+    's-ctx-label':'s_ctx_label','s-ctx-note':'s_ctx_note','s-ctx-save-btn':'s_ctx_save',
+    's-notif-label':'s_notif_label','s-notif-text':'s_notif_text',
+    's-data-label':'s_data_label','s-clear-btn':'s_clear','s-close-btn':'s_close',
+    's-save-btn':'s_save','s-test-btn':'s_test',
+  };
+  for (const [id, key] of Object.entries(ids)) {
+    const el = document.getElementById(id);
+    if (el && t[key]) el.textContent = t[key];
+  }
   document.querySelectorAll('[data-fr]').forEach(el => {
     el.textContent = el.getAttribute('data-' + lang) || el.textContent;
   });
-  // Streak days
+  const ctx = document.getElementById('ctx-input');
+  if (ctx && !ctx.value) ctx.placeholder = t.ctx_placeholder;
   buildStreak();
   updateApiStatus();
 }
 
-// ── Zone ─────────────────────────────────────────────────────
-function setZone(z) {
-  zone = z;
-  localStorage.setItem('signal-zone', z);
-  document.getElementById('zt-terrain').className = 'zone-tab ' + (z==='terrain' ? 'active' : 'inactive') + ' terrain';
-  document.getElementById('zt-liens').className   = 'zone-tab ' + (z==='liens'   ? 'active' : 'inactive') + ' liens';
-  const accent = z === 'terrain' ? 'terrain-accent' : 'liens-accent';
-  ['q1-card','q2-card','q3-card'].forEach(id => {
-    const el = document.getElementById(id);
-    el.className = el.className.replace(/(terrain|liens)-accent/g, '') + ' ' + accent;
-  });
-  document.getElementById('crisis-card').className = 'card ' + accent;
-  // Update range color via CSS var tweak
-  document.getElementById('intensity-slider').style.accentColor = z === 'terrain' ? 'var(--red)' : 'var(--blue)';
-  resetDebrief();
-  applyTranslations();
-}
-
-// ── Mode ─────────────────────────────────────────────────────
 function setMode(m) {
   mode = m;
   ['soir','crise','patterns'].forEach(v => {
@@ -395,124 +349,117 @@ function setMode(m) {
   });
 }
 
-// ── Debrief ──────────────────────────────────────────────────
 function resetDebrief() {
-  ['q1','q2'].forEach(q => { const el = document.getElementById(q+'-input'); if(el) el.value=''; });
+  ['q1','q2'].forEach(q => { document.getElementById(q+'-input').value=''; });
   document.getElementById('q1-card').classList.remove('hidden');
   document.getElementById('q2-card').classList.add('hidden');
   document.getElementById('q3-card').classList.add('hidden');
   document.getElementById('debrief-resp').classList.add('hidden');
-  document.getElementById('debrief-resp').innerHTML = '';
+  document.getElementById('debrief-resp').innerHTML='';
   document.getElementById('reset-btn').classList.add('hidden');
-  document.getElementById('intensity-slider').value = 5;
-  document.getElementById('ival').textContent = '5';
+  document.getElementById('intensity-slider').value=5;
+  document.getElementById('ival').textContent='5';
 }
 
 function nextQ(n) {
-  const val = document.getElementById('q'+n+'-input').value.trim();
-  if (!val) return;
+  if (!document.getElementById('q'+n+'-input').value.trim()) return;
   document.getElementById('q'+n+'-card').classList.add('hidden');
   document.getElementById('q'+(n+1)+'-card').classList.remove('hidden');
 }
 
+function getContext() { return localStorage.getItem('signal-context') || ''; }
+
+function buildSystemPrompt(role) {
+  const ctx = getContext();
+  const ctxBlock = ctx ? `\n\nContexte personnel de l'utilisateur (à prendre en compte dans chaque réponse) :\n${ctx}` : '';
+  const ctxBlockEn = ctx ? `\n\nUser's personal context (factor this into every response):\n${ctx}` : '';
+
+  if (role === 'debrief') {
+    return lang==='fr'
+      ? `Tu es un psychologue bienveillant mais direct, spécialisé en trauma relationnel et attachement. Profil : cerveau hyperactif, méditation passive inefficace, seul "off" = sport extrême avec focus total. Débrief soir. Rôle : 1) Refléter sans minimiser. 2) Identifier un pattern si pertinent. 3) Proposer 1 exercice concret actif. Direct, bienveillant, 5-7 lignes max.${ctxBlock}`
+      : `You are a warm but direct psychologist specializing in relational trauma and attachment. Profile: hyperactive mind, passive meditation useless, only "off" = extreme sports with total focus. Evening debrief. Role: 1) Reflect without minimizing. 2) Identify a pattern if relevant. 3) Suggest 1 concrete active exercise. Direct, caring, 5-7 lines max.${ctxBlockEn}`;
+  }
+  if (role === 'crisis') {
+    return lang==='fr'
+      ? `Tu es un psychologue spécialisé en trauma relationnel. Profil : hyperactif mental, sport extrême comme seul "off", méditation passive inutile. Donne IMMÉDIATEMENT et UNIQUEMENT un exercice physique/focal concret pour sortir du moment de crise. Mobilise le focus total. Pas de respirations molles. Directement l'exercice, nommé, en 4-6 étapes courtes.${ctxBlock}`
+      : `You are a trauma psychologist specializing in relational trauma. Profile: hyperactive mind, extreme sports as only "off". Give IMMEDIATELY and ONLY a concrete physical/focus exercise to break the crisis. Total focus. No soft breathing. Directly the exercise, named, 4-6 short steps.${ctxBlockEn}`;
+  }
+  if (role === 'insight') {
+    return lang==='fr'
+      ? `Tu es un psychologue spécialisé en trauma relationnel. Génère une analyse courte et percutante des schémas les plus probables à surveiller. Sois direct. 3-4 observations concrètes, 1-2 lignes chacune.${ctxBlock}`
+      : `You are a trauma psychologist. Generate a short, punchy analysis of the most likely patterns to watch. Be direct. 3-4 concrete observations, 1-2 lines each.${ctxBlockEn}`;
+  }
+}
+
 async function submitDebrief() {
-  const key = getApiKey();
-  if (!key) { showNoKeyMsg('debrief-resp'); return; }
+  const key = getApiKey(); if (!key) { showNoKey('debrief-resp'); return; }
   const q1 = document.getElementById('q1-input').value.trim();
   const q2 = document.getElementById('q2-input').value.trim();
   const intensity = document.getElementById('intensity-slider').value;
   document.getElementById('q3-card').classList.add('hidden');
-  const resp = document.getElementById('debrief-resp');
-  resp.classList.remove('hidden');
-  resp.innerHTML = loading();
-
-  const zoneLabel = zone === 'terrain'
-    ? (lang==='fr' ? 'PTSD professionnel (terrain de reporter en Guyane)' : 'Professional PTSD (reporting field work in French Guiana)')
-    : (lang==='fr' ? 'trauma relationnel (trahisons passées, méfiance dans les liens)' : 'relational trauma (past betrayals, trust issues)');
-
-  const sys = lang==='fr'
-    ? `Tu es un psychologue bienveillant mais direct, spécialisé en trauma et attachement. Tu travailles avec un reporter (PTSD terrain Guyane + trauma relationnel — trahisons, manipulation). Profil : cerveau hyperactif, méditation passive inefficace, seul "off" = sport extrême avec focus total. Zone de travail : ${zoneLabel}. Rôle débrief soir : 1) Refléter sans minimiser. 2) Identifier un pattern si pertinent. 3) Proposer 1 exercice concret actif adapté. Direct, bienveillant, 5-7 lignes max.`
-    : `You are a warm but direct psychologist specializing in trauma and attachment. You work with a reporter (field PTSD + relational trauma — betrayals, manipulation). Profile: hyperactive mind, passive meditation ineffective, only "off" = extreme sports with total focus. Zone: ${zoneLabel}. Role for evening debrief: 1) Reflect without minimizing. 2) Identify a pattern if relevant. 3) Suggest 1 concrete active exercise. Direct, caring, 5-7 lines max.`;
-
-  const userMsg = lang==='fr'
-    ? `Zone ${zone} :\n- Ce qui a pesé : "${q1}"\n- Corps : "${q2}"\n- Intensité : ${intensity}/10`
-    : `Zone ${zone}:\n- Weighed: "${q1}"\n- Body: "${q2}"\n- Intensity: ${intensity}/10`;
-
-  const text = await callClaude(key, sys, userMsg);
-  resp.innerHTML = `<div class="ai-response">${text.replace(/\n/g,'<br>')}</div>`;
+  showLoading('debrief-resp');
+  const msg = lang==='fr'
+    ? `Ce soir :\n- Ce qui a pesé : "${q1}"\n- Corps : "${q2}"\n- Intensité : ${intensity}/10`
+    : `Tonight:\n- What weighed: "${q1}"\n- Body: "${q2}"\n- Intensity: ${intensity}/10`;
+  const text = await callAI(key, buildSystemPrompt('debrief'), msg);
+  document.getElementById('debrief-resp').innerHTML = `<div class="ai-response">${text.replace(/\n/g,'<br>')}</div>`;
   document.getElementById('reset-btn').classList.remove('hidden');
-  saveSession({date: new Date().toISOString(), zone, q1, intensity});
+  saveSession({date:new Date().toISOString(), q1, intensity});
 }
 
-// ── Crisis ────────────────────────────────────────────────────
 async function submitCrisis() {
-  const key = getApiKey();
-  if (!key) { showNoKeyMsg('crisis-resp'); return; }
-  const input = document.getElementById('crisis-input').value.trim();
-  if (!input) return;
-  const resp = document.getElementById('crisis-resp');
-  resp.classList.remove('hidden');
-  resp.innerHTML = loading();
-
-  const zoneLabel = zone === 'terrain'
-    ? (lang==='fr' ? 'PTSD terrain' : 'Field PTSD')
-    : (lang==='fr' ? 'trauma relationnel' : 'relational trauma');
-
-  const sys = lang==='fr'
-    ? `Tu es un psychologue spécialisé en trauma. Zone : ${zoneLabel}. Profil : hyperactif mental, sport extrême comme seul "off", méditation passive inefficace. Donne IMMÉDIATEMENT et UNIQUEMENT un exercice physique/focal concret pour sortir du moment de crise. Mobilise le focus total. Pas de respirations molles. Directement l'exercice, nommé, en 4-6 étapes courtes.`
-    : `You are a trauma psychologist. Zone: ${zoneLabel}. Profile: hyperactive mind, extreme sports as only "off", passive meditation useless. Give IMMEDIATELY and ONLY a concrete physical/focus exercise to break the crisis. Mobilize total focus. No soft breathing. Directly the exercise, named, 4-6 short steps.`;
-
-  const text = await callClaude(key, sys, input);
-  resp.innerHTML = `<div class="exercise-card"><div class="exercise-title">${lang==='fr'?'Exercice immédiat':'Immediate exercise'}</div><div class="exercise-body">${text.replace(/\n/g,'<br>')}</div></div>`;
+  const key = getApiKey(); if (!key) { showNoKey('crisis-resp'); return; }
+  const input = document.getElementById('crisis-input').value.trim(); if (!input) return;
+  showLoading('crisis-resp');
+  const text = await callAI(key, buildSystemPrompt('crisis'), input);
+  const title = lang==='fr' ? 'Exercice immédiat' : 'Immediate exercise';
+  document.getElementById('crisis-resp').innerHTML = `<div class="exercise-card"><div class="exercise-title">${title}</div><div class="exercise-body">${text.replace(/\n/g,'<br>')}</div></div>`;
 }
 
-// ── Patterns insight ──────────────────────────────────────────
 async function getInsight() {
-  const key = getApiKey();
-  if (!key) { showNoKeyMsg('insight-resp'); return; }
-  const btn = document.getElementById('insight-btn');
-  btn.disabled = true;
-  const resp = document.getElementById('insight-resp');
-  resp.innerHTML = loading();
-
-  const sys = lang==='fr'
-    ? `Tu es un psychologue spécialisé en trauma. En te basant sur les patterns typiques d'un reporter avec PTSD terrain (Guyane) et trauma relationnel (trahisons, méfiance), génère une analyse courte et percutante des schémas les plus probables à surveiller. Sois direct. 3-4 observations concrètes, 1-2 lignes chacune.`
-    : `You are a trauma psychologist. Based on typical patterns of a reporter with field PTSD (French Guiana) and relational trauma (betrayals, distrust), generate a short, punchy analysis of the most likely patterns to watch. Be direct. 3-4 concrete observations, 1-2 lines each.`;
-
-  const text = await callClaude(key, sys, lang==='fr'?'Analyse mes patterns.':'Analyze my patterns.');
-  resp.innerHTML = `<div class="ai-response" style="margin-top:12px">${text.replace(/\n/g,'<br>')}</div>`;
-  btn.disabled = false;
+  const key = getApiKey(); if (!key) { showNoKey('insight-resp'); return; }
+  const btn = document.getElementById('insight-btn'); btn.disabled=true;
+  showLoading('insight-resp');
+  const q = lang==='fr' ? 'Analyse mes patterns relationnels.' : 'Analyze my relational patterns.';
+  const text = await callAI(key, buildSystemPrompt('insight'), q);
+  document.getElementById('insight-resp').innerHTML = `<div class="ai-response" style="margin-top:12px">${text.replace(/\n/g,'<br>')}</div>`;
+  btn.disabled=false;
 }
 
-// ── API Call ─────────────────────────────────────────────────
-async function callClaude(key, system, userContent) {
+async function callAI(key, system, userContent) {
   try {
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`;
     const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({
-        systemInstruction: { parts: [{ text: system }] },
-        contents: [{ role: 'user', parts: [{ text: userContent }] }],
-        generationConfig: { maxOutputTokens: 1000, temperature: 0.7 }
+        systemInstruction:{parts:[{text:system}]},
+        contents:[{role:'user',parts:[{text:userContent}]}],
+        generationConfig:{maxOutputTokens:1000,temperature:0.7}
       })
     });
     const data = await res.json();
     if (data.error) return `Erreur : ${data.error.message}`;
     return data.candidates?.[0]?.content?.parts?.[0]?.text || 'Réponse vide.';
   } catch(e) {
-    return lang==='fr' ? 'Erreur de connexion. Vérifie ta clé API et ta connexion.' : 'Connection error. Check your API key and connection.';
+    return lang==='fr' ? 'Erreur de connexion.' : 'Connection error.';
   }
 }
 
-// ── API Key management ────────────────────────────────────────
-function getApiKey() { return localStorage.getItem('signal-gemini-key') || ''; }
+function getApiKey() { return localStorage.getItem('signal-gemini-key')||''; }
 
 function saveApiKey() {
-  const val = document.getElementById('api-key-input').value.trim();
-  if (!val) return;
+  const val = document.getElementById('api-key-input').value.trim(); if (!val) return;
   localStorage.setItem('signal-gemini-key', val);
   updateApiStatus('ok');
+}
+
+function saveContext() {
+  const val = document.getElementById('ctx-input').value.trim();
+  localStorage.setItem('signal-context', val);
+  const s = document.getElementById('ctx-status');
+  s.textContent = T[lang].ctx_saved;
+  s.classList.remove('hidden');
+  setTimeout(() => s.classList.add('hidden'), 2000);
 }
 
 async function testApiKey() {
@@ -521,11 +468,8 @@ async function testApiKey() {
   updateApiStatus('testing');
   try {
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`;
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: 'hi' }] }], generationConfig: { maxOutputTokens: 5 } })
-    });
+    const res = await fetch(url, {method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({contents:[{role:'user',parts:[{text:'hi'}]}],generationConfig:{maxOutputTokens:5}})});
     const d = await res.json();
     updateApiStatus(d.error ? 'err' : 'ok');
     if (!d.error) localStorage.setItem('signal-gemini-key', key);
@@ -533,47 +477,37 @@ async function testApiKey() {
 }
 
 function updateApiStatus(state) {
-  const t = T[lang];
-  const el = document.getElementById('api-status');
-  if (!el) return;
-  const key = getApiKey();
-  if (!state) state = key ? 'ok' : 'none';
-  const map = { ok:[t.api_status_ok,'ok'], err:[t.api_status_err,'err'], none:[t.api_status_none,'none'], testing:[t.api_status_testing,'none'] };
-  const [txt, cls] = map[state]||map.none;
-  el.textContent = txt;
-  el.className = 'api-status ' + cls;
+  const t = T[lang]; const el = document.getElementById('api-status'); if (!el) return;
+  if (!state) state = getApiKey() ? 'ok' : 'none';
+  const map = {ok:[t.api_ok,'ok'],err:[t.api_err,'err'],none:[t.api_none,'none'],testing:[t.api_testing,'none']};
+  const [txt,cls] = map[state]||map.none;
+  el.textContent=txt; el.className='api-status '+cls;
 }
 
-// ── Settings overlay ──────────────────────────────────────────
 function openSettings() {
   document.getElementById('settings-overlay').classList.remove('hidden');
-  const key = getApiKey();
-  if (key) document.getElementById('api-key-input').value = key;
+  const key = getApiKey(); if (key) document.getElementById('api-key-input').value=key;
+  const ctx = getContext(); if (ctx) document.getElementById('ctx-input').value=ctx;
   updateApiStatus();
 }
 function closeSettings() { document.getElementById('settings-overlay').classList.add('hidden'); }
 function handleOverlayClick(e) { if (e.target.id==='settings-overlay') closeSettings(); }
 
-// ── Notifications ─────────────────────────────────────────────
 function toggleNotif(on) {
   if (on && 'Notification' in window) {
     Notification.requestPermission().then(p => {
-      if (p !== 'granted') document.getElementById('notif-toggle').checked = false;
-      else localStorage.setItem('signal-notif', '1');
+      if (p!=='granted') document.getElementById('notif-toggle').checked=false;
+      else localStorage.setItem('signal-notif','1');
     });
-  } else {
-    localStorage.removeItem('signal-notif');
-  }
+  } else localStorage.removeItem('signal-notif');
 }
-function saveNotifTime(t) { localStorage.setItem('signal-notif-time', t); }
+function saveNotifTime(t) { localStorage.setItem('signal-notif-time',t); }
 
-// ── Streak / History ──────────────────────────────────────────
 function saveSession(data) {
-  const key = 'signal-sessions';
-  const sessions = JSON.parse(localStorage.getItem(key)||'[]');
+  const sessions = JSON.parse(localStorage.getItem('signal-sessions')||'[]');
   sessions.push(data);
-  if (sessions.length > 200) sessions.shift();
-  localStorage.setItem(key, JSON.stringify(sessions));
+  if (sessions.length>200) sessions.shift();
+  localStorage.setItem('signal-sessions', JSON.stringify(sessions));
 }
 
 function buildStreak() {
@@ -581,49 +515,44 @@ function buildStreak() {
   const sessions = JSON.parse(localStorage.getItem('signal-sessions')||'[]');
   const now = new Date();
   const row = document.getElementById('streak-row');
-  row.innerHTML = '';
-  for (let i=6; i>=0; i--) {
-    const d = new Date(now); d.setDate(d.getDate()-i);
-    const ds = d.toISOString().slice(0,10);
-    const s = sessions.find(s => s.date && s.date.startsWith(ds));
-    const div = document.createElement('div');
-    div.className = 'sday' + (s ? ' done ' + (s.zone||'terrain') : '');
-    div.textContent = days[6-i] || '?';
+  if (!row) return;
+  row.innerHTML='';
+  for (let i=6;i>=0;i--) {
+    const d=new Date(now); d.setDate(d.getDate()-i);
+    const ds=d.toISOString().slice(0,10);
+    const done=sessions.some(s=>s.date&&s.date.startsWith(ds));
+    const div=document.createElement('div');
+    div.className='sday'+(done?' done':'');
+    div.textContent=days[6-i]||'?';
     row.appendChild(div);
   }
 }
 
-// ── Clear data ────────────────────────────────────────────────
 function clearAllData() {
-  const msg = lang==='fr' ? 'Effacer toutes tes données Signal ?' : 'Clear all Signal data?';
-  if (!confirm(msg)) return;
-  ['signal-sessions','signal-gemini-key','signal-lang','signal-zone','signal-notif','signal-notif-time'].forEach(k => localStorage.removeItem(k));
-  closeSettings();
-  location.reload();
+  if (!confirm(lang==='fr'?'Effacer toutes les données Signal ?':'Clear all Signal data?')) return;
+  ['signal-sessions','signal-gemini-key','signal-lang','signal-context','signal-notif','signal-notif-time'].forEach(k=>localStorage.removeItem(k));
+  closeSettings(); location.reload();
 }
 
-// ── Helpers ───────────────────────────────────────────────────
-function loading() { return '<div class="loading"><div class="dot-a"></div><div class="dot-a"></div><div class="dot-a"></div></div>'; }
-function showNoKeyMsg(targetId) {
-  const resp = document.getElementById(targetId);
-  resp.classList.remove('hidden');
-  const msg = lang==='fr'
-    ? '<div class="ai-response" style="color:#F0997B">Aucune clé API configurée. Appuie sur ⚙ pour en ajouter une.</div>'
-    : '<div class="ai-response" style="color:#F0997B">No API key configured. Tap ⚙ to add one.</div>';
-  resp.innerHTML = msg;
+function showLoading(id) {
+  const el=document.getElementById(id);
+  el.classList.remove('hidden');
+  el.innerHTML='<div class="loading"><div class="dot-a"></div><div class="dot-a"></div><div class="dot-a"></div></div>';
 }
 
-// ── Init ──────────────────────────────────────────────────────
-document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent === lang.toUpperCase()));
-setZone(zone);
+function showNoKey(id) {
+  const el=document.getElementById(id);
+  el.classList.remove('hidden');
+  el.innerHTML=`<div class="ai-response" style="color:#F0997B">${T[lang].no_key}</div>`;
+}
+
+// Init
+document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.textContent===lang.toUpperCase()));
 setMode('soir');
-applyTranslations();
+applyT();
 
-// Service Worker registration
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js').then(reg => {
-    console.log('[Signal] SW registered:', reg.scope);
-  }).catch(err => console.warn('[Signal] SW failed:', err));
+  navigator.serviceWorker.register('./sw.js').catch(()=>{});
 }
 </script>
 </body>
